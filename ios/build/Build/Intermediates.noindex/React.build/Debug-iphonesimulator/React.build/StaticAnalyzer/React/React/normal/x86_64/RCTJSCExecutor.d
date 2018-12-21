@@ -1,0 +1,25 @@
+dependencies: \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Executors/RCTJSCExecutor.mm \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Executors/RCTJSCExecutor.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTJavaScriptExecutor.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTBridgeModule.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTDefines.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTInvalidating.h \
+  /Users/lory/Projects/BillBiuBiu/ios/build/Build/Products/Debug-iphonesimulator/include/cxxreact/JSBundleType.h \
+  /Users/lory/Projects/BillBiuBiu/ios/build/Build/Products/Debug-iphonesimulator/include/jschelpers/JavaScriptCore.h \
+  /Users/lory/Projects/BillBiuBiu/ios/build/Build/Products/Debug-iphonesimulator/include/jschelpers/JSCWrapper.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Modules/JSCSamplingProfiler.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTAssert.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTBridge+Private.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTBridge.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTBridgeDelegate.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTJavaScriptLoader.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTFrameUpdate.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Modules/RCTDevSettings.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTJSCErrorHandling.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTLog.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTUtils.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Base/RCTPerformanceLogger.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Profiler/RCTProfile.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Profiler/RCTJSCProfiler.h \
+  /Users/lory/Projects/BillBiuBiu/node_modules/react-native/React/Modules/RCTDevMenu.h
