@@ -45,6 +45,8 @@ import Svg, {
 } from 'react-native-svg';
 import { range } from 'lodash'
 import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
+import CircularSlider from './component/circularSlider'
+
 export default class BillBiuBiu extends Component {
 
   static defaultProps = {
@@ -61,7 +63,7 @@ export default class BillBiuBiu extends Component {
     super(props);
     this.state = {
       modalVisible: false,
-      modalVisible2: true,
+      modalVisible2: false,
       wallet: {
         charge2: {
           startX: 0,
@@ -151,62 +153,19 @@ export default class BillBiuBiu extends Component {
     };
   }
 
-  componentWillMount() {
-
-  }
-
   addRotateListener(walletName) {
     return PanResponder.create({
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
       onPanResponderGrant: (evt, gestureState) => {
-        this.state.wallet[walletName].retateStart = evt.nativeEvent.locationX
+        this.props.wallet[walletName].retateStart = evt.nativeEvent.locationX
       },
       onPanResponderRelease: (evt, gestureState) => {
-        if (Math.abs(this.state.wallet[walletName].retateStart, evt.nativeEvent.locationX) > 5) {
-          this.state.wallet[walletName].detail = !this.state.wallet[walletName].detail
-          this.setState(this.state)
+        if (Math.abs(this.props.wallet[walletName].retateStart, evt.nativeEvent.locationX) > 5) {
+          this.props.wallet[walletName].detail = !this.props.wallet[walletName].detail
+          this.setState(this.props)
         }
       },
-    })
-  }
-
-  addMoveListener(walletName) {
-    return PanResponder.create({
-      onMoveShouldSetPanResponder: (evt, gestureState) => true,
-      onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
-      onPanResponderGrant: (evt, gestureState) => {
-
-        this.state.wallet[walletName].trigger = true
-
-        let angle = Math.atan2(evt.nativeEvent.locationY - this.props.heightHalf, evt.nativeEvent.locationX - this.props.widthHalf)
-        angle += Math.PI / 2
-        angle < 0 ? angle += Math.PI * 2 : undefined
-        this.state.wallet[walletName].angle = angle
-      },
-      onPanResponderMove: (evt, gestureState) => {
-
-        let angle = Math.atan2(evt.nativeEvent.locationY - this.props.heightHalf, evt.nativeEvent.locationX - this.props.widthHalf)
-        angle += Math.PI / 2
-        angle < 0 ? angle += Math.PI * 2 : undefined
-
-        if (this.state.wallet[walletName].trigger) {
-          this.state.wallet[walletName].trigger = false
-          if (this.state.wallet[walletName].angle < angle) this.state.wallet[walletName].operate = this.state.wallet[walletName].yuan
-          else this.state.wallet[walletName].operate = this.state.wallet[walletName].cent
-        }
-        if (this.state.wallet[walletName].operate === this.state.wallet[walletName].yuan)
-          if (this.state.wallet[walletName].angle > Math.PI * 7 / 8 && angle < Math.PI / 8) this.state.wallet[walletName].operate.addition++
-          else if (this.state.wallet[walletName].angle < Math.PI / 8 && angle > Math.PI * 7 / 8) this.state.wallet[walletName].operate.addition--
-
-        this.state.wallet[walletName].angle = angle
-
-        this.state.wallet[walletName].operate.value = Math.floor(angle / Math.PI / 2 * this.props.scale) + this.state.wallet[walletName].operate.addition * this.props.scale
-        this.state.wallet[walletName].x = Math.sin(angle) * this.props.radius + this.props.widthHalf
-        this.state.wallet[walletName].y = this.props.heightHalf - Math.cos(angle) * this.props.radius
-        this.setState(this.state)
-
-      }
     })
   }
 
@@ -215,24 +174,7 @@ export default class BillBiuBiu extends Component {
       <View style={{ flex: 1 }}>
         <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
           {
-            Object.keys(this.state.wallet).map(_w =>
-              (
-                <Svg key={_w} width={this.props.width} height={this.props.height}>
-                  <Circle cx={this.props.widthHalf} cy={this.props.heightHalf} r={this.props.radius} fill="none" stroke="pink" strokeWidth="10" strokeOpacity="0.3" />
-                  <Circle cx={this.state.wallet[_w].x} cy={this.state.wallet[_w].y} r={this.props.touchRadius} fill="pink" {...this.addMoveListener(_w).panHandlers} />
-                  <G x={this.props.widthHalf} y={this.props.heightHalf} {...this.addRotateListener(_w).panHandlers}>
-                    <Circle r={this.props.radius - 10} opacity='0' ></Circle>
-                    {
-                      this.state.wallet[_w].detail ? (<G>
-                        <Text textAnchor='middle' y='-30' fontSize='24'>{this.state.wallet[_w].yuan.value}.{this.state.wallet[_w].cent.value}</Text>
-                        <Text textAnchor='middle' fontSize='10'>Balance</Text>
-                        <Text textAnchor='middle' y='10'>{this.state.wallet[_w].yuan.value || 1023}.{this.state.wallet[_w].cent.value || 49}</Text>
-                      </G>) : (<G></G>)
-                    }
-                  </G>
-                </Svg>
-              )
-            )
+            Object.keys(this.state.wallet).map(_w => (<CircularSlider key={_w} onUpdate={(integer, decimal) => {}}></CircularSlider>))
           }
         </View>
         <View style={styles.menu}>
@@ -330,9 +272,9 @@ export default class BillBiuBiu extends Component {
           this.state.modalVisible2 ? (
             <View style={styles.model}>
 
-            <Container>
-              <Header>
-              <Left>
+              <Container>
+                <Header>
+                  <Left>
                     <Button transparent onPress={() => {
                       // alert(2)
                       this.state.modalVisible2 = false
@@ -347,35 +289,35 @@ export default class BillBiuBiu extends Component {
                   <Right>
                   </Right>
                 </Header>
-              <Content>
-                <List
-                  leftOpenValue={75}
-                  rightOpenValue={-75}
-                  dataSource={(new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })).cloneWithRows([
-                    'Simon Mignolet',
-                    'Nathaniel Clyne',
-                    'Dejan Lovren',
-                    'Mama Sakho',
-                    'Alberto Moreno',
-                    'Emre Can',
-                    'Joe Allen',
-                    'Phil Coutinho',
-                  ])}
-                  renderRow={data =>
-                    <ListItem>
-                      <Text> {data}1 </Text>
-                    </ListItem>}
-                  renderLeftHiddenRow={data =>
-                    <Button full onPress={() => alert(data)}>
-                      <Icon active name="information-circle" />
-                    </Button>}
-                  renderRightHiddenRow={(data, secId, rowId, rowMap) =>
-                    <Button full danger onPress={() => {}}>
-                      <Icon active name="trash" />
-                    </Button>}
-                />
-              </Content>
-            </Container>
+                <Content>
+                  <List
+                    leftOpenValue={75}
+                    rightOpenValue={-75}
+                    dataSource={(new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })).cloneWithRows([
+                      'Simon Mignolet',
+                      'Nathaniel Clyne',
+                      'Dejan Lovren',
+                      'Mama Sakho',
+                      'Alberto Moreno',
+                      'Emre Can',
+                      'Joe Allen',
+                      'Phil Coutinho',
+                    ])}
+                    renderRow={data =>
+                      <ListItem>
+                        <Text> {data}1 </Text>
+                      </ListItem>}
+                    renderLeftHiddenRow={data =>
+                      <Button full onPress={() => alert(data)}>
+                        <Icon active name="information-circle" />
+                      </Button>}
+                    renderRightHiddenRow={(data, secId, rowId, rowMap) =>
+                      <Button full danger onPress={() => { }}>
+                        <Icon active name="trash" />
+                      </Button>}
+                  />
+                </Content>
+              </Container>
             </View>
           ) : null
         }
