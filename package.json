@@ -8,9 +8,10 @@
 	},
 	"dependencies": {
 		"lodash": "^4.17.11",
+		"native-base": "^2.1.4",
 		"react": "16.0.0-alpha.6",
 		"react-native": "0.44.3",
-		"react-native-svg": "^5.1.8",
+		"react-native-svg": "^5.1.8"
 	},
 	"devDependencies": {
 		"babel-jest": "23.6.0",

@@ -15,7 +15,10 @@ import {
   Modal,
   Image,
   TouchableHighlight,
-  Text as TextOrigin
+  Text as TextOrigin,
+  TextInput,
+  PickerIOS,
+  ListView
 } from 'react-native';
 import Svg, {
   Circle,
@@ -41,7 +44,7 @@ import Svg, {
   Mask,
 } from 'react-native-svg';
 import { range } from 'lodash'
-
+import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
 export default class BillBiuBiu extends Component {
 
   static defaultProps = {
@@ -57,7 +60,8 @@ export default class BillBiuBiu extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      modalVisible: true,
+      modalVisible: false,
+      modalVisible2: true,
       wallet: {
         charge2: {
           startX: 0,
@@ -159,9 +163,9 @@ export default class BillBiuBiu extends Component {
         this.state.wallet[walletName].retateStart = evt.nativeEvent.locationX
       },
       onPanResponderRelease: (evt, gestureState) => {
-        alert(1)
         if (Math.abs(this.state.wallet[walletName].retateStart, evt.nativeEvent.locationX) > 5) {
           this.state.wallet[walletName].detail = !this.state.wallet[walletName].detail
+          this.setState(this.state)
         }
       },
     })
@@ -208,36 +212,173 @@ export default class BillBiuBiu extends Component {
 
   render() {
     return (
-      <View style={{ marginTop: 40, flex: 1, flexDirection: 'row', flexWrap: 'wrap' }}>
-        {
-          Object.keys(this.state.wallet).map(_w => {
-            return (
-              <Svg key={_w} width={this.props.width} height={this.props.height}>
-                <Circle cx={this.props.widthHalf} cy={this.props.heightHalf} r={this.props.radius} fill="none" stroke="pink" strokeWidth="10" strokeOpacity="0.3" />
-                <Circle cx={this.state.wallet[_w].x} cy={this.state.wallet[_w].y} r={this.props.touchRadius} fill="pink" {...this.addMoveListener(_w).panHandlers} />
-                <G x={this.props.widthHalf} y={this.props.heightHalf} {...this.addRotateListener(_w).panHandlers}>
-                  <Circle r={this.props.radius - 10} opacity='0' ></Circle>
-                  <G>
-                    <Text textAnchor='middle' y='-30' fontSize='24'>{this.state.wallet[_w].yuan.value}.{this.state.wallet[_w].cent.value}</Text>
-                    <Text textAnchor='middle' fontSize='10'>Balance</Text>
-                    <Text textAnchor='middle' y='10'>{this.state.wallet[_w].yuan.value || 1023}.{this.state.wallet[_w].cent.value || 49}</Text>
+      <View style={{ flex: 1 }}>
+        <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
+          {
+            Object.keys(this.state.wallet).map(_w =>
+              (
+                <Svg key={_w} width={this.props.width} height={this.props.height}>
+                  <Circle cx={this.props.widthHalf} cy={this.props.heightHalf} r={this.props.radius} fill="none" stroke="pink" strokeWidth="10" strokeOpacity="0.3" />
+                  <Circle cx={this.state.wallet[_w].x} cy={this.state.wallet[_w].y} r={this.props.touchRadius} fill="pink" {...this.addMoveListener(_w).panHandlers} />
+                  <G x={this.props.widthHalf} y={this.props.heightHalf} {...this.addRotateListener(_w).panHandlers}>
+                    <Circle r={this.props.radius - 10} opacity='0' ></Circle>
+                    {
+                      this.state.wallet[_w].detail ? (<G>
+                        <Text textAnchor='middle' y='-30' fontSize='24'>{this.state.wallet[_w].yuan.value}.{this.state.wallet[_w].cent.value}</Text>
+                        <Text textAnchor='middle' fontSize='10'>Balance</Text>
+                        <Text textAnchor='middle' y='10'>{this.state.wallet[_w].yuan.value || 1023}.{this.state.wallet[_w].cent.value || 49}</Text>
+                      </G>) : (<G></G>)
+                    }
                   </G>
-                </G>
-              </Svg>
+                </Svg>
+              )
             )
-          })
-        }
+          }
+        </View>
         <View style={styles.menu}>
           <View style={styles.button}>
             <TextOrigin style={styles.option}>Bill</TextOrigin>
           </View>
-          <View style={styles.button}>
+          <View style={styles.button}
+            // onStartShouldSetResponder = {() => true}
+            // onStartShouldSetResponderCapture = {() => true}
+            onTouchStart={() => {
+              this.state.modalVisible = true
+              this.setState(this.state)
+            }}>
             <TextOrigin style={styles.option}>Wallet</TextOrigin>
           </View>
           <View style={styles.button}>
             <TextOrigin style={styles.option}>Resume</TextOrigin>
           </View>
         </View>
+        {
+          this.state.modalVisible ? (
+            <View style={styles.model}>
+              <Container>
+                <Header style={{
+                  // borderTopLeftRadius: 25, borderTopRightRadius: 25, height: 50 
+                }}>
+                  <Left>
+                    <Button transparent onPress={() => {
+                      // alert(2)
+                      this.state.modalVisible = false
+                      this.setState(this.state)
+                    }}>
+                      <TextBase>Cancel</TextBase>
+                    </Button>
+                  </Left>
+                  <Body>
+                    <Title>Add Wallet</Title>
+                  </Body>
+                  <Right>
+                    <Button transparent>
+                      <TextBase>Add</TextBase>
+                    </Button>
+                  </Right>
+                </Header>
+                <Content>
+                  <Form>
+                    <Item inlineLabel>
+                      <Label>Wallet Name</Label>
+                      <Input />
+                    </Item>
+                    <Item itemPicker inlineLabel>
+                      <Label>Collection</Label>
+                      <Picker
+                        mode="dropdown"
+                        iosIcon={<Icon name="ios-arrow-down-outline" />}
+                        style={{ width: undefined }}
+                        placeholder="Select your SIM"
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue='key0'
+                      >
+                        <Picker.Item label="Wallet" value="key0" />
+                        <Picker.Item label="ATM Card" value="key1" />
+                        <Picker.Item label="Debit Card" value="key2" />
+                        <Picker.Item label="Credit Card" value="key3" />
+                        <Picker.Item label="Net Banking" value="key4" />
+                      </Picker>
+                    </Item>
+                    <Item inlineLabel>
+                      <Label>Amount</Label>
+                      <Input keyboardType='numeric' />
+                    </Item>
+                    <Item itemPicker inlineLabel>
+                      <Label>Way of Resume</Label>
+                      <Picker
+                        mode="dropdown"
+                        iosIcon={<Icon name="ios-arrow-down-outline" />}
+                        style={{ width: undefined }}
+                        placeholder="Select your SIM"
+                        placeholderStyle={{ color: "#bfc6ea" }}
+                        placeholderIconColor="#007aff"
+                        selectedValue='key0'
+                      >
+                        <Picker.Item label="To Limit" value="key0" />
+                        <Picker.Item label="Add" value="key1" />
+                      </Picker>
+                    </Item>
+                  </Form>
+                </Content>
+              </Container>
+            </View>
+          ) : null
+        }
+        {
+          this.state.modalVisible2 ? (
+            <View style={styles.model}>
+
+            <Container>
+              <Header>
+              <Left>
+                    <Button transparent onPress={() => {
+                      // alert(2)
+                      this.state.modalVisible2 = false
+                      this.setState(this.state)
+                    }}>
+                      <TextBase>Back</TextBase>
+                    </Button>
+                  </Left>
+                  <Body>
+                    <Title>Bill</Title>
+                  </Body>
+                  <Right>
+                  </Right>
+                </Header>
+              <Content>
+                <List
+                  leftOpenValue={75}
+                  rightOpenValue={-75}
+                  dataSource={(new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 })).cloneWithRows([
+                    'Simon Mignolet',
+                    'Nathaniel Clyne',
+                    'Dejan Lovren',
+                    'Mama Sakho',
+                    'Alberto Moreno',
+                    'Emre Can',
+                    'Joe Allen',
+                    'Phil Coutinho',
+                  ])}
+                  renderRow={data =>
+                    <ListItem>
+                      <Text> {data}1 </Text>
+                    </ListItem>}
+                  renderLeftHiddenRow={data =>
+                    <Button full onPress={() => alert(data)}>
+                      <Icon active name="information-circle" />
+                    </Button>}
+                  renderRightHiddenRow={(data, secId, rowId, rowMap) =>
+                    <Button full danger onPress={() => {}}>
+                      <Icon active name="trash" />
+                    </Button>}
+                />
+              </Content>
+            </Container>
+            </View>
+          ) : null
+        }
       </View>
     );
   }
@@ -252,6 +393,34 @@ const styles = StyleSheet.create({
   },
   option: {
     fontSize: 12
+  },
+  model: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    // left: '10%',
+    // top: '5%',
+    // borderRadius: 30,
+    backgroundColor: 'white',
+  },
+  modelTitle: {
+    fontSize: 20,
+    textAlign: 'center',
+    width: '80%',
+    marginTop: 10
+
+  },
+  modelInput: {
+    height: 30,
+    borderColor: 'gray',
+    borderWidth: 1,
+    marginLeft: 10,
+    marginRight: 10,
+    marginTop: 5,
+    marginBottom: 5,
+    padding: 3,
+    borderWidth: 0,
+    borderBottomWidth: 10
   },
   menu: {
     position: 'absolute',
