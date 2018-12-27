@@ -53,26 +53,20 @@ export default class CircularSlider extends Component {
 
   static defaultProps = {
     strokeWidth: 10,
-    sideLength: 120,
+    sideLength: 110,
     touchRadius: 7,
     scaleInteger: 100,
     scaleDecimal: 100
   }
 
-  constructor(props) {
-    super(props)
-    
-  }
-
-  componentWillMount(){
-    this.props.strokeWidthHalf = this.props.strokeWidth / 2
-    this.props.sideLengthHalf = this.props.strokeWidthHalf
-    this.props.strokeWidth =1000
-    alert(JSON.stringify(this.props))
+  componentWillMount() {
     this.state = {
-      x: this.props.sideLengthHalf,
-      y: this.props.strokeWidthHalf
+      x: this.props.sideLength / 2,
+      y: this.props.touchRadius
     }
+    this.state.sideLengthHalf = this.state.x
+    this.state.radius = this.state.x - this.state.y
+    this.setState(this.state)
   }
 
   get addMoveListener() {
@@ -83,7 +77,7 @@ export default class CircularSlider extends Component {
         this.props.trigger = true
       },
       onPanResponderMove: (evt, gestureState) => {
-        let angle = Math.atan2(evt.nativeEvent.locationY - this.props.sideLengthHalf, evt.nativeEvent.locationX - this.props.sideLengthHalf)
+        let angle = Math.atan2(evt.nativeEvent.locationY - this.state.sideLengthHalf, evt.nativeEvent.locationX - this.state.sideLengthHalf)
         angle += Math.PI / 2
         angle < 0 ? angle += Math.PI * 2 : undefined
 
@@ -104,8 +98,8 @@ export default class CircularSlider extends Component {
         this.props.decimal = Math.floor(angle / Math.PI / 2 * this.props.scaleDecimal)
 
         this.setState({
-          x: Math.sin(angle) * this.props.radius + this.props.sideLengthHalf,
-          y: this.props.sideLengthHalf - Math.cos(angle) * this.props.radius
+          x: Math.sin(angle) * this.state.radius + this.state.sideLengthHalf,
+          y: this.state.sideLengthHalf - Math.cos(angle) * this.state.radius
         })
 
         this.props.onUpdate(this.props.integer, this.props.decimal)
@@ -115,20 +109,11 @@ export default class CircularSlider extends Component {
 
   render() {
     return (
-      <Svg width={this.props.sideLength} height={this.props.sideLength}>
-        <Circle cx={this.props.sideLengthHalf} cy={this.props.sideLengthHalf} r={this.props.radius} fill="none" stroke="pink" strokeWidth={this.props.strokeWidth} strokeOpacity="0.3" />
-        <Circle cx={this.props.x} cy={this.props.y} r={this.props.touchRadius} fill="black" {...this.addMoveListener.panHandlers} />
-        {/* <G x={this.props.sideLengthHalf} y={this.props.sideLengthHalf} {...this.addRotateListener(this.props._walletName).panHandlers}>
-                    <Circle r={this.props.radius - 10} opacity='0' ></Circle>
-                    {
-                        this.props.wallet[this.props._walletName].detail ? (<G>
-                            <Text textAnchor='middle' y='-30' fontSize='24'>{this.props.wallet[this.props._walletName].yuan.value}.{this.props.wallet[this.props._walletName].cent.value}</Text>
-                            <Text textAnchor='middle' fontSize='10'>Balance</Text>
-                            <Text textAnchor='middle' y='10'>{this.props.wallet[this.props._walletName].yuan.value || 1023}.{this.props.wallet[this.props._walletName].cent.value || 49}</Text>
-                        </G>) : (<G></G>)
-                    }
-                </G> */}
-      </Svg>
+      <G width={this.props.sideLength} height={this.props.sideLength}>
+        <Circle cx={this.state.sideLengthHalf} cy={this.state.sideLengthHalf} r={this.state.radius} fill="none" stroke="pink" strokeWidth={this.props.strokeWidth} strokeOpacity="0.3" />
+        <Circle cx={this.state.x} cy={this.state.y} r={this.props.touchRadius} fill="pink" {...this.addMoveListener.panHandlers} />
+       
+      </G>
     )
   }
 }

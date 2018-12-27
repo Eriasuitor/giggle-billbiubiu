@@ -45,7 +45,7 @@ import Svg, {
 } from 'react-native-svg';
 import { range } from 'lodash'
 import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
-import CircularSlider from './component/circularSlider'
+import AmountPad from './component/amountPad'
 
 export default class BillBiuBiu extends Component {
 
@@ -174,7 +174,7 @@ export default class BillBiuBiu extends Component {
       <View style={{ flex: 1 }}>
         <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
           {
-            Object.keys(this.state.wallet).map(_w => (<CircularSlider key={_w} onUpdate={(integer, decimal) => {}}></CircularSlider>))
+            Object.keys(this.state.wallet).map(_w => (<AmountPad key={_w} balance={2310.91}></AmountPad>))
           }
         </View>
         <View style={styles.menu}>
