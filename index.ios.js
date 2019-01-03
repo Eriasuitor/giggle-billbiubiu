@@ -44,9 +44,10 @@ import Svg, {
   Mask,
 } from 'react-native-svg';
 import { range } from 'lodash'
-import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
+
 import AmountPad from './component/amountPad'
 import Notification from './component/notification'
+import NewWallet from './page/newWallet'
 
 export default class BillBiuBiu extends Component {
 
@@ -173,7 +174,8 @@ export default class BillBiuBiu extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
-      <Notification ref='notificationPad' />
+        <Notification ref='notificationPad' />
+        <NewWallet />
         <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
           {
             Object.keys(this.state.wallet).map(_w => (<AmountPad key={_w} balance={2310.91} onClick={(integer, decimal, color) => this.refs.notificationPad.addNotificcation([{ name: '撤销', operation: () => alert("???/") }], '新账产生', '你收到了来自生活的一百万现金', -1)}></AmountPad>))
@@ -196,7 +198,7 @@ export default class BillBiuBiu extends Component {
             <TextOrigin style={styles.option}>Resume</TextOrigin>
           </View>
         </View>
-        {
+        {/* {
           this.state.modalVisible ? (
             <View style={styles.model}>
               <Container>
@@ -269,8 +271,8 @@ export default class BillBiuBiu extends Component {
               </Container>
             </View>
           ) : null
-        }
-        {
+        } */}
+        {/* {
           this.state.modalVisible2 ? (
             <View style={styles.model}>
 
@@ -322,7 +324,7 @@ export default class BillBiuBiu extends Component {
               </Container>
             </View>
           ) : null
-        }
+        } */}
       </View>
     );
   }
