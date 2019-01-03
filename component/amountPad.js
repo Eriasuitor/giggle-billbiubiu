@@ -43,7 +43,7 @@ import CircularSlider from './circularSlider'
 export default class AmountPad extends Component {
 
   static propTypes = {
-    onUpdate: PropTypes.func,
+    onClick: PropTypes.func,
     balance: PropTypes.number.isRequired,
     strokeWidthHalf: PropTypes.number,
     sideLengthHalf: PropTypes.number,
@@ -67,7 +67,8 @@ export default class AmountPad extends Component {
       radius: this.props.sideLength / 2 - this.props.touchRadius,
       showDetail: true,
       integer: 0,
-      decimal: 0
+      decimal: 0,
+      color: 'pink'
     }
     this.setState(this.state)
   }
@@ -77,12 +78,9 @@ export default class AmountPad extends Component {
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponderCapture: (evt, gestureState) => true,
       onPanResponderGrant: (evt, gestureState) => {
-        alert('123')
-
         this.state.retateStart = evt.nativeEvent.locationX
       },
       onPanResponderRelease: (evt, gestureState) => {
-        alert(this.state.retateStar)
         if (Math.abs(this.state.retateStart, evt.nativeEvent.locationX) > 5) {
           this.setState({
             showDetail: !this.state.showDetail
@@ -95,17 +93,23 @@ export default class AmountPad extends Component {
   render() {
     return (
       <Svg width={this.props.sideLength} height={this.props.sideLength} style={styles.pad}>
-        <G x={this.state.sideLengthHalf} y={this.state.sideLengthHalf} {...this.addRotateListener.panHandlers}>
-          <Circle r={this.state.radius - 10} opacity='1' ></Circle>
+        <CircularSlider color={this.state.color} onUpdate={(integer, decimal) => { this.setState({ integer, decimal }) }}></CircularSlider>
+        <G x={this.state.sideLengthHalf} y={this.state.sideLengthHalf} {...this.addRotateListener.panHandlers}  >
+          <Circle r={this.state.radius - 10} opacity='0' onPress={() => { this.props.onClick(this.state.integer, this.state.decimal, this.state.color) }} />
           {
             this.state.showDetail ? (<G>
               <Text textAnchor='middle' y='-30' fontSize='24'>{this.state.integer}.{this.state.decimal}</Text>
               <Text textAnchor='middle' fontSize='10'>Balance</Text>
               <Text textAnchor='middle' y='10'>{this.props.balance}</Text>
-            </G>) : (<G></G>)
+            </G>) : (<G>
+              <Circle y='-10' r='4' fill='pink' opacity='0.3' onPress={() => this.setState({ color: 'pink' })} />
+              <Circle y='-10' x='-15' r='4' fill='grey' opacity='0.3' onPress={() => this.setState({ color: 'grey' })} />
+              <Circle y='-10' x='15' r='4' fill='purple' opacity='0.3' onPress={() => this.setState({ color: 'purple' })} />
+              <Circle y='-10' x='-30' r='4' fill='red' opacity='0.3' onPress={() => this.setState({ color: 'red' })} />
+              <Circle y='-10' x='30' r='4' fill='green' opacity='0.3' onPress={() => this.setState({ color: 'green' })} />
+            </G>)
           }
         </G>
-        <CircularSlider onUpdate={(integer, decimal) => { }}></CircularSlider>
       </Svg>
     )
   }

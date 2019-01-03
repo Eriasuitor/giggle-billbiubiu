@@ -46,6 +46,7 @@ import Svg, {
 import { range } from 'lodash'
 import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
 import AmountPad from './component/amountPad'
+import Notification from './component/notification'
 
 export default class BillBiuBiu extends Component {
 
@@ -172,9 +173,10 @@ export default class BillBiuBiu extends Component {
   render() {
     return (
       <View style={{ flex: 1 }}>
+      <Notification ref='notificationPad' />
         <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
           {
-            Object.keys(this.state.wallet).map(_w => (<AmountPad key={_w} balance={2310.91}></AmountPad>))
+            Object.keys(this.state.wallet).map(_w => (<AmountPad key={_w} balance={2310.91} onClick={(integer, decimal, color) => this.refs.notificationPad.addNotificcation([{ name: '撤销', operation: () => alert("???/") }], '新账产生', '你收到了来自生活的一百万现金', -1)}></AmountPad>))
           }
         </View>
         <View style={styles.menu}>
