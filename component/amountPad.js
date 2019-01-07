@@ -50,7 +50,8 @@ export default class AmountPad extends Component {
     radius: PropTypes.number,
     target: PropTypes.string,
     integer: PropTypes.number,
-    decimal: PropTypes.number
+    decimal: PropTypes.number,
+    name: PropTypes.string
   }
 
   static defaultProps = {
@@ -81,7 +82,7 @@ export default class AmountPad extends Component {
         this.state.retateStart = evt.nativeEvent.locationX
       },
       onPanResponderRelease: (evt, gestureState) => {
-        if (Math.abs(this.state.retateStart, evt.nativeEvent.locationX) > 5) {
+        if (Math.abs(this.state.retateStart - evt.nativeEvent.locationX) > 30) {
           this.setState({
             showDetail: !this.state.showDetail
           })
@@ -95,13 +96,16 @@ export default class AmountPad extends Component {
       <Svg width={this.props.sideLength} height={this.props.sideLength} style={styles.pad}>
         <CircularSlider color={this.state.color} onUpdate={(integer, decimal) => { this.setState({ integer, decimal }) }}></CircularSlider>
         <G x={this.state.sideLengthHalf} y={this.state.sideLengthHalf} {...this.addRotateListener.panHandlers}  >
-          <Circle r={this.state.radius - 10} opacity='0' onPress={() => { this.props.onClick(this.state.integer, this.state.decimal, this.state.color) }} />
           {
             this.state.showDetail ? (<G>
-              <Text textAnchor='middle' y='-30' fontSize='24'>{this.state.integer}.{this.state.decimal}</Text>
+              <Text textAnchor='middle' y='-35' fontSize='10'>{this.props.name}</Text>
+              <Text textAnchor='middle' y='-25' fontSize='24'>{this.state.integer}.{this.state.decimal}</Text>
               <Text textAnchor='middle' fontSize='10'>Balance</Text>
               <Text textAnchor='middle' y='10'>{this.props.balance}</Text>
+              <Circle r={this.state.radius - 10} opacity='0' onPress={() => { this.props.onClick(this.state.integer, this.state.decimal, this.state.color) }} />
             </G>) : (<G>
+              <Text textAnchor='middle' y='-35' fontSize='10'>{this.props.name}</Text>
+              <Circle r={this.state.radius - 10} opacity='0' onPress={() => { }} />
               <Circle y='-10' r='4' fill='pink' opacity='0.3' onPress={() => this.setState({ color: 'pink' })} />
               <Circle y='-10' x='-15' r='4' fill='grey' opacity='0.3' onPress={() => this.setState({ color: 'grey' })} />
               <Circle y='-10' x='15' r='4' fill='purple' opacity='0.3' onPress={() => this.setState({ color: 'purple' })} />

@@ -42,19 +42,19 @@ import CircularSlider from './circularSlider'
 
 export default class Notification extends Component {
 
-  addNotificcation(bottom = [{ name: '', operation: () => { } }], title = '', description = '', timeout = 3000) {
-    let newNotificatoin = { bottom, title, description }
-    newNotificatoin.bottom.push({
+  addNotification({ bottom = [], title = '', description = '', timeout = 3000 }) {
+    let newNotification = { bottom, title, description }
+    newNotification.bottom.push({
       name: '关闭', operation: () => {
-        this.state.notifications = this.state.notifications.filter(n => n != newNotificatoin)
+        this.state.notifications = this.state.notifications.filter(n => n != newNotification)
         this.setState({
           notifications: this.state.notifications
         })
       }
     })
-    this.state.notifications.push(newNotificatoin)
+    this.state.notifications.push(newNotification)
     timeout === -1 || setTimeout(() => {
-      this.state.notifications = this.state.notifications.filter(n => n != newNotificatoin)
+      this.state.notifications = this.state.notifications.filter(n => n != newNotification)
       this.setState({
         notifications: this.state.notifications
       })
@@ -79,8 +79,23 @@ export default class Notification extends Component {
               <View style={{ flex: 2, borderTopLeftRadius: 15, borderBottomLeftRadius: 15, display: 'flex', flexDirection: 'column', borderRightWidth: 0.25, borderColor: 'grey' }}>
                 {
                   n.bottom.map((b, h2) => (
-                    <View key={h2} style={{ flex: 1, padding: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomWidth: h2 === n.bottom.length - 1 ? 0 : 0.25, borderColor: 'grey' }}
-                      onTouchStart={() => { b.operation() }}
+                    <View
+                      key={h2}
+                      style={{
+                        flex: 1,
+                        padding: 10,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderBottomWidth: h2 === n.bottom.length - 1 ? 0 : 0.25, borderColor: 'grey'
+                      }}
+                      onTouchStart={() => {
+                        b.operation()
+                        this.state.notifications.splice(h, 1)
+                        this.setState({
+                          notifications: this.state.notifications
+                        })
+                      }}
                     >
                       <TextOrigin>{b.name}</TextOrigin>
                     </View>

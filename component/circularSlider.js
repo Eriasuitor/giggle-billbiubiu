@@ -65,6 +65,7 @@ export default class CircularSlider extends Component {
     }
     this.state.integer = 0
     this.state.decimal = 0
+    this.state.integerHundred = 0
     this.state.angle = 0
     this.state.sideLengthHalf = this.state.x
     this.state.radius = this.state.x - this.state.y
@@ -90,8 +91,8 @@ export default class CircularSlider extends Component {
         if (this.state.target === 'integer') {
           this.state.integer = Math.floor(angle / Math.PI / 2 * this.props.scaleInteger)
 
-          if (this.state.angle > Math.PI * 7 / 8 && angle < Math.PI / 8) this.state.integer += 100
-          else if (this.state.angle < Math.PI / 8 && angle > Math.PI * 7 / 8) this.state.integer -= 100
+          if (this.state.angle > Math.PI * 7 / 4 && angle < Math.PI / 4) this.state.integerHundred += 100
+          else if (this.state.angle < Math.PI / 4 && angle > Math.PI * 7 / 4) this.state.integerHundred -= 100
         }
         else {
           this.state.decimal = Math.floor(angle / Math.PI / 2 * this.props.scaleDecimal)
@@ -99,10 +100,10 @@ export default class CircularSlider extends Component {
 
         this.setState({
           x: Math.sin(angle) * this.state.radius + this.state.sideLengthHalf,
-          y: this.state.sideLengthHalf - Math.cos(angle) * this.state.radius
+          y: this.state.sideLengthHalf - Math.cos(angle) * this.state.radius,
         })
         this.state.angle = angle
-        this.props.onUpdate(this.state.integer, this.state.decimal)
+        this.props.onUpdate(this.state.integer + this.state.integerHundred, this.state.decimal)
       }
     })
   }
