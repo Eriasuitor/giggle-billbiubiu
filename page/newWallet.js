@@ -30,16 +30,15 @@ export default class NewWallet extends Component {
     };
 
     static propTypes = {
-        walletName: PropTypes.string,
+        name: PropTypes.string,
         amount: PropTypes.number,
         limited: PropTypes.bool,
-        walletName: PropTypes.string,
         collections: PropTypes.array
     }
 
     static defaultProps = {
         collections: [],
-        walletName: '',
+        name: '',
         limited: false,
         amount: 0,
         collection: '',
@@ -52,23 +51,26 @@ export default class NewWallet extends Component {
     componentDidMount() {
         this.props.navigation.setParams({
             navigatePress: () => {
-                this.props.navigation.state.params.callback(['walletName', 'limited', 'amount', 'collection', 'newCollection'].reduce((a, b) => Object.assign(a, { [b]: this.state[b] }), {}))
-                this.props.navigation.navigate('Home')
+                this.props.navigation.state.params.callback(['name', 'limited', 'amount', 'collection', 'newCollection', 'oldName'].reduce((a, b) => Object.assign(a, { [b]: this.state[b] }), {}))
+                this.props.navigation.goBack()
             }
         })
     }
 
     componentWillMount() {
-        this.props.collections.push('Add One')
+        let wallet = this.props.navigation.state.params.wallet
+        wallet.collections = this.props.navigation.state.params.collections
+        wallet.collections.push('Add One')
+        wallet.oldName = wallet.name
         this.state = Object.assign({
             invalid: {
                 collections: false,
-                walletName: false,
+                name: false,
                 limited: false,
                 amount: false,
                 collection: false
             }
-        }, this.props)
+        }, wallet)
         this.setState(this.state)
     }
 
@@ -77,11 +79,12 @@ export default class NewWallet extends Component {
             <Container style={{}}>
                 <Content>
                     <Form>
-                        <Item error={this.state.invalid.walletName} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                        <Item error={this.state.invalid.name} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                             <Label>Wallet Name</Label>
                             <Input
                                 style={{ textAlign: 'right' }}
-                                onChangeText={walletName => this.setState({ walletName })}
+                                value={this.state.name}
+                                onChangeText={name => this.setState({ name })}
                             />
                         </Item>
                         <Item error={this.state.invalid.collection} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
@@ -117,6 +120,7 @@ export default class NewWallet extends Component {
                             <Label>Amount</Label>
                             <Input keyboardType='numeric'
                                 style={{ textAlign: 'right' }}
+                                value={this.state.amount.toString()}
                                 onChangeText={amount => this.setState({ amount })}
                             />
                         </Item>

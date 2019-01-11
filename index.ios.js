@@ -7,7 +7,7 @@ import { AppRegistry } from 'react-native';
 import BillBiuBiu from './page/home'
 import { StackNavigator } from 'react-navigation'
 import NewWallet from './page/newWallet'
-import SwipeableListExample from './page/wallets'
+import Wallets from './page/wallets'
 
 AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
     Home: {
@@ -19,7 +19,7 @@ AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
     NewWallet: {
         screen: NewWallet,
     },
-    Wallets: SwipeableListExample
+    Wallets
 }, {
         initialRouteName: 'Home',
         cardStyle: {

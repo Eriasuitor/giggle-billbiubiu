@@ -14,13 +14,15 @@ import {
     PickerIOS,
     ListView,
     AsyncStorage,
-    AlertIOS
+    AlertIOS,
+    DatePickerIOS
 } from 'react-native';
 import { range } from 'lodash'
 
 import AmountPad from '../component/amountPad'
 import Notification from '../component/notification'
 import { createDrawerNavigator } from 'react-navigation'
+import moment from 'moment'
 
 export default class BillBiuBiu extends Component {
 
@@ -37,38 +39,88 @@ export default class BillBiuBiu extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            datePicker: new Date(),
             recordCounter: 0,
             collections: [],
             bill: [],
             wallets: [{
                 name: 'English',
                 balance: 3000.33,
-            },{
+                amount: 10000,
+                limited: true,
+                collection: '国防部特批'
+            }, {
                 name: '中文',
                 balance: 3000.33,
-            },{
+                amount: 10000,
+                limited: true,
+                collection: '国防部特批'
+            }, {
                 name: '个人生存',
                 balance: 3000.33,
-            },{
+                amount: 10000,
+                limited: true,
+                collection: '国防部特批'
+            }, {
                 name: 'Survive Group',
                 balance: 3000.33,
+                amount: 10000,
+                limited: true,
+                collection: '国防部特批'
             }]
         };
-        
-        AsyncStorage.getItem('homeState',(error, result) => {
-            error && AlertIOS.alert('Our Apologies',`Something wrong when get storage, for the security of your data, please exit this BillBiuBiu, error message: ${JSON.stringify(error)}`)
-            result && this.setState(JSON.parse(result))
-        })
+
     }
 
-    componentDidMount(){
+    componentWillMount() {
+        this.setState(this.state)
+        AsyncStorage.clear()
+        this.props.navigation.addListener('willFocus', (payload) => {
+            AsyncStorage.getItem('homeState', (error, result) => {
+            error && AlertIOS.alert('Our Apologies', `Something wrong when get storage, for the security of your data, please exit this BillBiuBiu, error message: ${JSON.stringify(error)}`)
+            result ? this.setState(JSON.parse(result)) : this.setState(this.state)
+        })
+          });
+        
+    }
+
+    componentDidMount() {
+        
+    }
+
+    goWallets(){
         this.props.navigation.navigate({
             routeName: 'Wallets',
             params: {
-                wallets: this.state.wallets
+                wallets: this.state.wallets,
+                collections: this.state.collections
             }
         })
     }
+
+    afterWalletEdit(value) {
+        let wallet = this.state.wallets.find(_w => _w.name === value.walletName)
+        if(!wallet) {
+          wallet = {balance: 0}
+          this.state.wallets.push(wallet)
+        }
+        if (value.newCollection) {
+          value.collection = value.newCollection
+          this.state.collections.find(_c => _c === value.newCollection) || this.state.collections.push(value.newCollection)
+        }
+        Object.assign(wallet, {
+          name: value.walletName,
+          amount: value.amount,
+          limited: value.limited,
+          collection: value.collection
+        })
+        this.setState({
+          wallets,
+          collections: this.state.collections
+        })
+        this.saveItem()
+      }
+    
 
     afterNewWallet(newWallet) {
         if (newWallet && !this.state.wallets[newWallet.walletName]) {
@@ -91,8 +143,8 @@ export default class BillBiuBiu extends Component {
         }
     }
 
-    saveItem(){
-        AsyncStorage.setItem('homeState', JSON.stringify(this.state), error => error && AlertIOS.alert('Our Apologies',`Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
+    saveItem() {
+        AsyncStorage.setItem('homeState', JSON.stringify(this.state), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
     }
 
     newBill(wallet, amount, color) {
@@ -101,7 +153,8 @@ export default class BillBiuBiu extends Component {
             recordCounter: ++this.state.recordCounter,
             walletName: wallet.name,
             amount,
-            color
+            color,
+            date: this.state.datePicker
         })
         this.setState(this.state);
         this.saveItem()
@@ -128,7 +181,7 @@ export default class BillBiuBiu extends Component {
                 }).call(this, this.state.recordCounter)
             }],
             title: `wallet ${wallet.name} 新账单产生`,
-            description: `wallet ${wallet.name} consume ¥ ${amount}`,
+            description: `wallet ${wallet.name} consume ¥ ${amount} at ${moment(this.state.datePicker).format('YYYY-MM-DD H:mm')}`,
         });
     }
 
@@ -149,8 +202,12 @@ export default class BillBiuBiu extends Component {
                     }
                 </View>
                 <View style={styles.menu}>
+                    <DatePickerIOS style={styles.datePicker}
+                        date={this.state.datePicker}
+                        onDateChange={datePicker => this.setState({ datePicker })}
+                    />
                     <View style={styles.button}
-                        onTouchStart={() => AlertIOS.alert('?',JSON.stringify(this.props.navigation.getParam('newWallet')))}
+                        onTouchStart={() => this.goWallets()}
                     >
                         <TextOrigin style={styles.option}>Bill</TextOrigin>
                     </View>
@@ -188,38 +245,12 @@ const styles = StyleSheet.create({
     option: {
         fontSize: 12
     },
-    model: {
-        position: 'absolute',
+    datePicker: {
         width: '100%',
-        height: '100%',
-        // left: '10%',
-        // top: '5%',
-        // borderRadius: 30,
-        backgroundColor: 'white',
-    },
-    modelTitle: {
-        fontSize: 20,
-        textAlign: 'center',
-        width: '80%',
-        marginTop: 10
-
-    },
-    modelInput: {
-        height: 30,
-        borderColor: 'gray',
-        borderWidth: 1,
-        marginLeft: 10,
-        marginRight: 10,
-        marginTop: 5,
-        marginBottom: 5,
-        padding: 3,
-        borderWidth: 0,
-        borderBottomWidth: 10
     },
     menu: {
         position: 'absolute',
         width: '100%',
-        backgroundColor: 'black',
         bottom: 0,
         flex: 1,
         flexDirection: 'row',
