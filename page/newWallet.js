@@ -9,98 +9,124 @@ import {
     Modal,
     Image,
     TouchableHighlight,
-    Text as TextOrigin,
     TextInput,
     PickerIOS,
     ListView
 } from 'react-native';
-import { Container, Header, Content, Left, Right, Body, Button, Icon, Title, Form, Item, Input, Label, Text as TextBase, Picker, List, ListItem } from 'native-base';
+import PropTypes from 'prop-types'
+import { Container, Header, Content, List, ListItem, Text, Icon, Left, Body, Right, Switch, Button, Title, Form, Item, Input, Label, Picker } from 'native-base';
+import { NavigationActions } from 'react-navigation';
 
 export default class NewWallet extends Component {
+    static navigationOptions = ({ navigation, navigationOptions }) => {
+        const { params } = navigation.state;
+        return {
+            title: 'New Wallet',
+            headerRight:
+                <Button block iconLeft transparent onPress={() => navigation.state.params.navigatePress()}>
+                    <Icon name='add' style={{ fontSize: 30 }} />
+                </Button>
+        }
+    };
+
+    static propTypes = {
+        walletName: PropTypes.string,
+        amount: PropTypes.number,
+        limited: PropTypes.bool,
+        walletName: PropTypes.string,
+        collections: PropTypes.array
+    }
+
+    static defaultProps = {
+        collections: [],
+        walletName: '',
+        limited: false,
+        amount: 0,
+        collection: '',
+    }
+
+    goHome() {
+
+    }
+
+    componentDidMount() {
+        this.props.navigation.setParams({
+            navigatePress: () => {
+                this.props.navigation.state.params.callback(['walletName', 'limited', 'amount', 'collection', 'newCollection'].reduce((a, b) => Object.assign(a, { [b]: this.state[b] }), {}))
+                this.props.navigation.navigate('Home')
+            }
+        })
+    }
+
+    componentWillMount() {
+        this.props.collections.push('Add One')
+        this.state = Object.assign({
+            invalid: {
+                collections: false,
+                walletName: false,
+                limited: false,
+                amount: false,
+                collection: false
+            }
+        }, this.props)
+        this.setState(this.state)
+    }
+
     render() {
         return (
-            <View style={styles.container}>
-                <Container>
-                    <Header style={{
-                        // borderTopLeftRadius: 25, borderTopRightRadius: 25, height: 50 
-                    }}>
-                        <Left>
-                            <Button transparent onPress={() => {
-                                // alert(2)
-                                this.state.modalVisible = false
-                                this.setState(this.state)
-                            }}>
-                                <TextBase>Cancel</TextBase>
-                            </Button>
-                        </Left>
-                        <Body>
-                            <Title>Add Wallet</Title>
-                        </Body>
-                        <Right>
-                            <Button transparent>
-                                <TextBase>Add</TextBase>
-                            </Button>
-                        </Right>
-                    </Header>
-                    <Content>
-                        <Form>
-                            <Item inlineLabel>
-                                <Label>Wallet Name</Label>
-                                <Input />
+            <Container style={{}}>
+                <Content>
+                    <Form>
+                        <Item error={this.state.invalid.walletName} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                            <Label>Wallet Name</Label>
+                            <Input
+                                style={{ textAlign: 'right' }}
+                                onChangeText={walletName => this.setState({ walletName })}
+                            />
+                        </Item>
+                        <Item error={this.state.invalid.collection} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
+                            <Label>Collection</Label>
+                            <Picker
+                                headerStyle={{ paddingTop: 40 }}
+                                iosHeader="Collections"
+                                iosIcon={<Icon name="ios-arrow-down-outline" />}
+                                placeholder="Click to Select"
+                                placeholderStyle={{ color: "#bfc6ea" }}
+                                placeholderIconColor="#007aff"
+                                selectedValue={this.state.collection}
+                                onValueChange={collection => this.setState({ collection })}
+                            >
+                                {
+                                    this.state.collections.map(_c => <Picker.Item key={_c} label={_c} value={_c} />)
+                                }
+                            </Picker>
+                        </Item>
+                        {
+                            this.state.collection === 'Add One' &&
+                            <Item error={this.state.invalid.newCollection} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                                <Label>新建集合名称</Label>
+                                <Input
+                                    style={{ textAlign: 'right' }}
+                                    onChangeText={newCollection => {
+                                        this.setState({ newCollection })
+                                    }}
+                                />
                             </Item>
-                            <Item itemPicker inlineLabel>
-                                <Label>Collection</Label>
-                                <Picker
-                                    mode="dropdown"
-                                    iosIcon={<Icon name="ios-arrow-down-outline" />}
-                                    style={{ width: undefined }}
-                                    placeholder="Select your SIM"
-                                    placeholderStyle={{ color: "#bfc6ea" }}
-                                    placeholderIconColor="#007aff"
-                                    selectedValue='key0'
-                                >
-                                    <Picker.Item label="Wallet" value="key0" />
-                                    <Picker.Item label="ATM Card" value="key1" />
-                                    <Picker.Item label="Debit Card" value="key2" />
-                                    <Picker.Item label="Credit Card" value="key3" />
-                                    <Picker.Item label="Net Banking" value="key4" />
-                                </Picker>
-                            </Item>
-                            <Item inlineLabel>
-                                <Label>Amount</Label>
-                                <Input keyboardType='numeric' />
-                            </Item>
-                            <Item itemPicker inlineLabel>
-                                <Label>Way of Resume</Label>
-                                <Picker
-                                    mode="dropdown"
-                                    iosIcon={<Icon name="ios-arrow-down-outline" />}
-                                    style={{ width: undefined }}
-                                    placeholder="Select your SIM"
-                                    placeholderStyle={{ color: "#bfc6ea" }}
-                                    placeholderIconColor="#007aff"
-                                    selectedValue='key0'
-                                >
-                                    <Picker.Item label="To Limit" value="key0" />
-                                    <Picker.Item label="Add" value="key1" />
-                                </Picker>
-                            </Item>
-                        </Form>
-                    </Content>
-                </Container>
-            </View>
+                        }
+                        <Item error={this.state.invalid.amount} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                            <Label>Amount</Label>
+                            <Input keyboardType='numeric'
+                                style={{ textAlign: 'right' }}
+                                onChangeText={amount => this.setState({ amount })}
+                            />
+                        </Item>
+                        <Item error={this.state.invalid.limited} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                            <Label>Limited</Label>
+                            <Switch value={this.state.limited} onValueChange={limited => this.setState({ limited })} />
+                        </Item>
+                    </Form>
+                </Content>
+            </Container>
         )
     }
 }
-
-const styles = StyleSheet.create({
-    container: {
-      position: 'absolute',
-      width: '100%',
-      height: '100%',
-      // left: '10%',
-      // top: '5%',
-      // borderRadius: 30,
-      backgroundColor: 'white',
-    },
-  });

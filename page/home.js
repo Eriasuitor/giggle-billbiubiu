@@ -12,13 +12,15 @@ import {
     Text as TextOrigin,
     TextInput,
     PickerIOS,
-    ListView
+    ListView,
+    AsyncStorage,
+    AlertIOS
 } from 'react-native';
 import { range } from 'lodash'
 
 import AmountPad from '../component/amountPad'
 import Notification from '../component/notification'
-import NewWallet from './newWallet'
+import { createDrawerNavigator } from 'react-navigation'
 
 export default class BillBiuBiu extends Component {
 
@@ -35,113 +37,74 @@ export default class BillBiuBiu extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            modalVisible: false,
-            modalVisible2: false,
             recordCounter: 0,
+            collections: [],
             bill: [],
-            wallet: {
-                charge2: {
-                    startX: 0,
-                    startY: 0,
-                    balance: 100,
-                    yuan: {
-                        value: 0,
-                        addition: 0
-                    },
-                    cent: {
-                        value: 0,
-                        addition: 0
-                    },
-                    x: this.props.widthHalf,
-                    y: this.props.heightHalf - this.props.radius,
-                    trigger: false,
-                    detail: false
-
-                },
-                charge3: {
-                    startX: 0,
-                    startY: 0,
-                    balance: 100,
-                    yuan: {
-                        value: 0,
-                        addition: 0
-                    },
-                    cent: {
-                        value: 0,
-                        addition: 0
-                    },
-                    x: this.props.widthHalf,
-                    y: this.props.heightHalf - this.props.radius,
-                    trigger: false,
-                    detail: true
-
-                },
-                charge4: {
-                    startX: 0,
-                    balance: 100,
-                    startY: 0,
-                    yuan: {
-                        value: 0,
-                        addition: 0
-                    },
-                    cent: {
-                        value: 0,
-                        addition: 0
-                    },
-                    x: this.props.widthHalf,
-                    y: this.props.heightHalf - this.props.radius,
-                    trigger: false,
-                    detail: false
-
-                },
-                charge5: {
-                    startX: 0,
-                    startY: 0,
-                    balance: 100,
-                    yuan: {
-                        value: 0,
-                        addition: 0
-                    },
-                    cent: {
-                        value: 0,
-                        addition: 0
-                    },
-                    x: this.props.widthHalf,
-                    y: this.props.heightHalf - this.props.radius,
-                    trigger: false,
-                    detail: false
-
-                },
-                charge6: {
-                    startX: 0,
-                    startY: 0,
-                    balance: 100,
-                    yuan: {
-                        value: 0,
-                        addition: 0
-                    },
-                    cent: {
-                        value: 0,
-                        addition: 0
-                    },
-                    x: this.props.widthHalf,
-                    y: this.props.heightHalf - this.props.radius,
-                    trigger: false,
-                    detail: false
-                }
-            }
+            wallets: [{
+                name: 'English',
+                balance: 3000.33,
+            },{
+                name: '中文',
+                balance: 3000.33,
+            },{
+                name: '个人生存',
+                balance: 3000.33,
+            },{
+                name: 'Survive Group',
+                balance: 3000.33,
+            }]
         };
+        
+        AsyncStorage.getItem('homeState',(error, result) => {
+            error && AlertIOS.alert('Our Apologies',`Something wrong when get storage, for the security of your data, please exit this BillBiuBiu, error message: ${JSON.stringify(error)}`)
+            result && this.setState(JSON.parse(result))
+        })
     }
 
-    newBill(walletName, amount, color) {
-        this.state.wallet[walletName].balance -= amount;
+    componentDidMount(){
+        this.props.navigation.navigate({
+            routeName: 'Wallets',
+            params: {
+                wallets: this.state.wallets
+            }
+        })
+    }
+
+    afterNewWallet(newWallet) {
+        if (newWallet && !this.state.wallets[newWallet.walletName]) {
+            if (newWallet.newCollection) {
+                newWallet.collection = newWallet.newCollection
+                this.state.collections.push(newWallet.newCollection)
+            }
+            this.setState({
+                wallet: Object.assign(this.state.wallets, {
+                    [newWallet.walletName]: {
+                        balance: 0,
+                        amount: newWallet.amount,
+                        limited: newWallet.limited,
+                        collection: newWallet.collection,
+                    }
+                }),
+                collections: this.state.collections
+            })
+            this.saveItem()
+        }
+    }
+
+    saveItem(){
+        AsyncStorage.setItem('homeState', JSON.stringify(this.state), error => error && AlertIOS.alert('Our Apologies',`Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
+    }
+
+    newBill(wallet, amount, color) {
+        wallet.balance -= amount;
         this.state.bill.push({
             recordCounter: ++this.state.recordCounter,
-            walletName,
+            walletName: wallet.name,
             amount,
             color
         })
         this.setState(this.state);
+        this.saveItem()
         this.refs.notificationPad.addNotification({
             bottom: [{
                 name: '撤销', operation: (recordCounter => {
@@ -154,17 +117,18 @@ export default class BillBiuBiu extends Component {
                             })
                         let bill = this.state.bill[billIndex]
                         this.state.bill.splice(billIndex, 1)
-                        this.state.wallet[bill.walletName].balance += bill.amount
+                        wallet.balance += bill.amount
                         this.refs.notificationPad.addNotification({
                             title: 'Recall Success',
-                            description: `wallet ${walletName} recall ¥ ${amount}`,
+                            description: `wallet ${wallet.name} recall ¥ ${amount}`,
                         })
                         this.setState(this.state)
+                        this.saveItem()
                     }
                 }).call(this, this.state.recordCounter)
             }],
-            title: `wallet ${walletName} 新账单产生`,
-            description: `wallet ${walletName} consume ¥ ${amount}`,
+            title: `wallet ${wallet.name} 新账单产生`,
+            description: `wallet ${wallet.name} consume ¥ ${amount}`,
         });
     }
 
@@ -172,33 +136,40 @@ export default class BillBiuBiu extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <Notification ref='notificationPad' />
-                {/* <NewWallet /> */}
                 <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
                     {
-                        Object.keys(this.state.wallet).map(_w => (
+                        this.state.wallets.map(_w => (
                             <AmountPad
-                                key={_w}
-                                balance={this.state.wallet[_w].balance}
-                                name={_w}
+                                key={_w.name}
+                                balance={_w.balance}
+                                name={_w.name}
                                 onClick={(integer, decimal, color) => this.newBill.call(this, _w, integer + decimal, color)}
                             />
                         ))
                     }
                 </View>
                 <View style={styles.menu}>
-                    <View style={styles.button}>
+                    <View style={styles.button}
+                        onTouchStart={() => AlertIOS.alert('?',JSON.stringify(this.props.navigation.getParam('newWallet')))}
+                    >
                         <TextOrigin style={styles.option}>Bill</TextOrigin>
                     </View>
                     <View style={styles.button}
-                        // onStartShouldSetResponder = {() => true}
-                        // onStartShouldSetResponderCapture = {() => true}
                         onTouchStart={() => {
-                            this.state.modalVisible = true
-                            this.setState(this.state)
+                            this.props.navigation.navigate({
+                                routeName: 'NewWallet',
+                                params: {
+                                    callback: newWallet => {
+                                        this.afterNewWallet(newWallet)
+                                    }
+                                }
+                            })
                         }}>
                         <TextOrigin style={styles.option}>Wallet</TextOrigin>
                     </View>
-                    <View style={styles.button}>
+                    <View style={styles.button}
+                        onTouchStart={() => this.props.navigation.goBack()}
+                    >
                         <TextOrigin style={styles.option}>Resume</TextOrigin>
                     </View>
                 </View>
