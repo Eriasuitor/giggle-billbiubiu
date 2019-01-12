@@ -8,6 +8,7 @@ import BillBiuBiu from './page/home'
 import { StackNavigator } from 'react-navigation'
 import NewWallet from './page/newWallet'
 import Wallets from './page/wallets'
+import AttributeEditor from  './page/attributeEditor'
 
 AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
     Home: {
@@ -19,7 +20,8 @@ AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
     NewWallet: {
         screen: NewWallet,
     },
-    Wallets
+    Wallets,
+    AttributeEditor
 }, {
         initialRouteName: 'Home',
         cardStyle: {

@@ -77,18 +77,18 @@ export default class BillBiuBiu extends Component {
         AsyncStorage.clear()
         this.props.navigation.addListener('willFocus', (payload) => {
             AsyncStorage.getItem('homeState', (error, result) => {
-            error && AlertIOS.alert('Our Apologies', `Something wrong when get storage, for the security of your data, please exit this BillBiuBiu, error message: ${JSON.stringify(error)}`)
-            result ? this.setState(JSON.parse(result)) : this.setState(this.state)
-        })
-          });
-        
+                error && AlertIOS.alert('Our Apologies', `Something wrong when get storage, for the security of your data, please exit this BillBiuBiu, error message: ${JSON.stringify(error)}`)
+                result ? this.setState(JSON.parse(result)) : this.setState(this.state)
+            })
+        });
+
     }
 
     componentDidMount() {
-        
+
     }
 
-    goWallets(){
+    goWallets() {
         this.props.navigation.navigate({
             routeName: 'Wallets',
             params: {
@@ -100,27 +100,27 @@ export default class BillBiuBiu extends Component {
 
     afterWalletEdit(value) {
         let wallet = this.state.wallets.find(_w => _w.name === value.walletName)
-        if(!wallet) {
-          wallet = {balance: 0}
-          this.state.wallets.push(wallet)
+        if (!wallet) {
+            wallet = { balance: 0 }
+            this.state.wallets.push(wallet)
         }
         if (value.newCollection) {
-          value.collection = value.newCollection
-          this.state.collections.find(_c => _c === value.newCollection) || this.state.collections.push(value.newCollection)
+            value.collection = value.newCollection
+            this.state.collections.find(_c => _c === value.newCollection) || this.state.collections.push(value.newCollection)
         }
         Object.assign(wallet, {
-          name: value.walletName,
-          amount: value.amount,
-          limited: value.limited,
-          collection: value.collection
+            name: value.walletName,
+            amount: value.amount,
+            limited: value.limited,
+            collection: value.collection
         })
         this.setState({
-          wallets,
-          collections: this.state.collections
+            wallets,
+            collections: this.state.collections
         })
         this.saveItem()
-      }
-    
+    }
+
 
     afterNewWallet(newWallet) {
         if (newWallet && !this.state.wallets[newWallet.walletName]) {
@@ -144,7 +144,7 @@ export default class BillBiuBiu extends Component {
     }
 
     saveItem() {
-        AsyncStorage.setItem('homeState', JSON.stringify(this.state), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
+        AsyncStorage.setItem('homeState', JSON.stringify(this.state), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during malfunction won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
     }
 
     newBill(wallet, amount, color) {

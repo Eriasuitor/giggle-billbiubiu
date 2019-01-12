@@ -31,7 +31,7 @@ class Wallets extends Component {
     this.setState({ listViewData: newData });
   }
 
-  afterWalletEdition(value) {
+  afterWalletEdition(formItems) {
     let wallet = this.state.wallets.find(_w => _w.name === value.oldName)
     if (value.newCollection) {
       value.collection = value.newCollection
@@ -52,6 +52,51 @@ class Wallets extends Component {
 
   saveItem() {
     AsyncStorage.mergeItem('homeState', JSON.stringify({ wallets: this.state.wallets, collections: this.state.collections, }), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
+  }
+
+  goEditWallet(data){
+    this.props.navigation.navigate({
+      routeName: 'AttributeEditor',
+      params: {
+        callback: formItems => {
+          this.afterWalletEdition(formItems)
+        },
+        headerTitle: `Edit Wallet '${data.name}'`,
+        formItems: [
+          {
+            title: 'Wallet Name',
+            type: 'string',
+            value: data.name,
+            validMethod: value => value.length < 20
+          },
+          {
+            title: 'Balance',
+            type: 'int',
+            value: data.balance,
+            validMethod: value => value < 200000
+          },
+          {
+            title: 'Amount',
+            type: 'int',
+            value: data.amount,
+            validMethod: value => value > 200000
+          },
+          {
+            title: 'Limited',
+            type: 'boolean',
+            value: data.limited,
+            validMethod: value => value
+          },
+          {
+            title: 'Collection',
+            type: 'checkbox',
+            value: data.collection,
+            options: this.state.collections,
+            validMethod: value => value
+          },
+        ]
+      }
+    })
   }
 
   render() {
@@ -96,19 +141,7 @@ class Wallets extends Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.backRightBtn, styles.backRightBtnRight]}
-              onPress={_ => {
-                this.props.navigation.navigate({
-                  routeName: 'NewWallet',
-                  params: {
-                    callback: value => {
-                      this.afterWalletEdition(value)
-                    },
-                    wallet: data,
-                    collections: this.state.collections
-                  }
-                })
-              }
-              }>
+              onPress={() => this.goEditWallet(data) }>
               <Text style={styles.backTextWhite}>编辑</Text>
             </TouchableOpacity>
           </View>
