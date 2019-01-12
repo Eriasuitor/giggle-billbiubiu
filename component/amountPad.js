@@ -51,7 +51,8 @@ export default class AmountPad extends Component {
     target: PropTypes.string,
     integer: PropTypes.number,
     decimal: PropTypes.number,
-    name: PropTypes.string
+    name: PropTypes.string,
+    colors: PropTypes.array
   }
 
   static defaultProps = {
@@ -60,6 +61,7 @@ export default class AmountPad extends Component {
     touchRadius: 7,
     scaleInteger: 100,
     scaleDecimal: 100,
+    colors: ['pink', 'grey', 'purple', 'red', 'green']
   }
 
   componentWillMount() {
@@ -106,11 +108,11 @@ export default class AmountPad extends Component {
             </G>) : (<G>
               <Text textAnchor='middle' y='-35' fontSize='10'>{this.props.name}</Text>
               <Circle r={this.state.radius - 10} opacity='0' onPress={() => { }} />
-              <Circle y='-10' r='4' fill='pink' opacity='0.3' onPress={() => this.setState({ color: 'pink' })} />
-              <Circle y='-10' x='-15' r='4' fill='grey' opacity='0.3' onPress={() => this.setState({ color: 'grey' })} />
-              <Circle y='-10' x='15' r='4' fill='purple' opacity='0.3' onPress={() => this.setState({ color: 'purple' })} />
-              <Circle y='-10' x='-30' r='4' fill='red' opacity='0.3' onPress={() => this.setState({ color: 'red' })} />
-              <Circle y='-10' x='30' r='4' fill='green' opacity='0.3' onPress={() => this.setState({ color: 'green' })} />
+              <Circle y='-10' r='4' fill='pink' opacity='0.3' onPress={() => this.setState({ color: this.props.colors[0] })} />
+              <Circle y='-10' x='-15' r='4' fill='grey' opacity='0.3' onPress={() => this.setState({ color: this.props.colors[1] })} />
+              <Circle y='-10' x='15' r='4' fill='purple' opacity='0.3' onPress={() => this.setState({ color: this.props.colors[2] })} />
+              <Circle y='-10' x='-30' r='4' fill='red' opacity='0.3' onPress={() => this.setState({ color: this.props.colors[3] })} />
+              <Circle y='-10' x='30' r='4' fill='green' opacity='0.3' onPress={() => this.setState({ color: this.props.colors[4] })} />
             </G>)
           }
         </G>

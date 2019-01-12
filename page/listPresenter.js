@@ -5,24 +5,25 @@ import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Container, Header, Content, List, ListItem, Icon, Left, Body, Right, Switch, Button, Title, Form, Item, Input, Label, Picker, Card, CardItem, Thumbnail } from 'native-base';
 import 'prop-types';
 import lodash from 'lodash'
+import moment from 'moment'
 
-class Wallets extends Component {
-  static propTypes = {
-    wallets: PropTypes.array.isRequired,
+export default class ListPresenter extends Component {
+  static navigationOptions = ({ navigation, navigationOptions }) => {
+    const { params } = navigation.state;
+    return {
+      title: navigation.getParam('headerTitle', 'Invalid Access'),
+    }
+  };
+
+  componentWillMount() {
+    this.setState({
+      list: this.props.navigation.getParam('list', [])
+    })
   }
-
-  static defaultProps = {
-    wallets: []
-  }
-
 
   constructor(props) {
     super(props);
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
-    this.state = {
-      collections: this.props.navigation.state.params.collections,
-      wallets: this.props.navigation.state.params.wallets
-    };
   }
 
   deleteRow(secId, rowId, rowMap) {
@@ -32,56 +33,21 @@ class Wallets extends Component {
     this.setState({ listViewData: newData });
   }
 
-  afterWalletEdition(wallet, formItems) {
-    lodash.zip(Object.keys(wallet), formItems).map(_ => wallet[_[0]] = _[1].value)
-    this.setState(this.state)
+  saveList() {
+    AsyncStorage.mergeItem('listPresenter', JSON.stringify({ list: this.state.list }), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
   }
 
-  saveItem() {
-    AsyncStorage.mergeItem('homeState', JSON.stringify({ wallets: this.state.wallets, collections: this.state.collections, }), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
-  }
-
-  goEditWallet(wallet){
+  goEditor(row) {
     this.props.navigation.navigate({
       routeName: 'AttributeEditor',
       params: {
         callback: formItems => {
-          this.afterWalletEdition(wallet,formItems)
+          row = formItems
+          this.setState(this.state)
+          this.saveList()
         },
-        headerTitle: `Edit Wallet '${wallet.name}'`,
-        formItems: [
-          {
-            title: 'Wallet Name',
-            type: 'string',
-            value: wallet.name,
-            validMethod: value => value.length < 20
-          },
-          {
-            title: 'Balance',
-            type: 'int',
-            value: wallet.balance,
-            validMethod: value => value < 200000
-          },
-          {
-            title: 'Amount',
-            type: 'int',
-            value: wallet.amount,
-            validMethod: value => value > 200000
-          },
-          {
-            title: 'Limited',
-            type: 'boolean',
-            value: wallet.limited,
-            validMethod: value => value
-          },
-          {
-            title: 'Collection',
-            type: 'checkbox',
-            value: wallet.collection,
-            options: this.state.collections,
-            validMethod: value => value
-          },
-        ]
+        headerTitle: row[0].value,
+        formItems: row
       }
     })
   }
@@ -89,8 +55,8 @@ class Wallets extends Component {
   render() {
     return (
       <SwipeListView style={styles.container}
-        dataSource={this.ds.cloneWithRows(this.state.wallets)}
-        renderRow={data => (
+        dataSource={this.ds.cloneWithRows(this.state.list)}
+        renderRow={_row => (
           <TouchableHighlight
             onPress={_ => console.log('You touched me')}
             style={styles.row}
@@ -101,17 +67,16 @@ class Wallets extends Component {
               display: 'flex',
               flexDirection: 'row'
             }}>
-              <Text style={{ flex: 3, fontSize: 30, textAlign: 'right', marginRight: 20 }}>{data.name}</Text>
+              <Text style={{ flex: 3, fontSize: 30, textAlign: 'right', marginRight: 20 }}>{_row[0].value}</Text>
               <View style={{ flex: 7 }}>
-                <Text style={styles.item}><Text style={styles.label}>余额：</Text>{data.balance}</Text>
-                <Text style={styles.item}><Text style={styles.label}>每月补充数额：</Text>{data.amount}</Text>
-                <Text style={styles.item}><Text style={styles.label}>限制额度：</Text>{data.limited ? '是' : '否'}</Text>
-                <Text style={styles.item}><Text style={styles.label}>集合：</Text>{data.collection}</Text>
+                {
+                  _row.slice(1, _row.length).map(_ao => <Text key={_ao.value} style={styles.item}><Text style={styles.label}>{_ao.title}：</Text>{_ao.type === 'date' ? moment(_ao.value).format('YYYY-MM-DD H:mm') : _ao.value}</Text>)
+                }
               </View>
             </View>
           </TouchableHighlight>
         )}
-        renderHiddenRow={(data, secId, rowId, rowMap) => (
+        renderHiddenRow={(row, secId, rowId, rowMap) => (
           <View style={styles.rowBack}>
             <TouchableOpacity
               style={{
@@ -128,7 +93,7 @@ class Wallets extends Component {
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.backRightBtn, styles.backRightBtnRight]}
-              onPress={() => this.goEditWallet(data) }>
+              onPress={() => this.goEditor(row)}>
               <Text style={styles.backTextWhite}>编辑</Text>
             </TouchableOpacity>
           </View>
@@ -191,5 +156,3 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
-
-export default Wallets;

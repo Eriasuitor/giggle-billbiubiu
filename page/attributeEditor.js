@@ -32,15 +32,21 @@ export default class AttributeEditor extends Component {
         }
     };
 
+    componentWillMount() {
+        this.setState({
+            formItems: this.props.navigation.getParam('formItems', [])
+        })
+    }
+
     componentDidMount() {
         this.props.navigation.setParams({
             navigatePress: () => {
-                this.props.navigation.state.params.callback()
+                this.props.navigation.state.params.callback(this.state.formItems)
                 this.props.navigation.goBack()
             }
         })
     }
-    
+
     string(item) {
         return (
             <Item key={item.title} error={!item.validMethod(item.value)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
@@ -64,10 +70,15 @@ export default class AttributeEditor extends Component {
                 <Label>{item.title}</Label>
                 <Input
                     style={{ textAlign: 'right' }}
-                    value={item.value && item.value.toString()}
+                    value={item.value != undefined && item.value.toString()}
                     keyboardType='numeric'
                     onChangeText={value => {
-                        item.value = parseFloat(value)
+                        item.value = value.indexOf('.') != value.lastIndexOf('.')? item.value: value
+                        this.setState(this.state)
+                        this.asyncStorage()
+                    }}
+                    onBlur={value => {
+                        item.value = parseFloat(item.value)
                         this.setState(this.state)
                         this.asyncStorage()
                     }}
@@ -163,19 +174,7 @@ export default class AttributeEditor extends Component {
 
     }
 
-    componentWillMount() {
-        [
-            {
-                title: '',
-                type: ['int', 'string', 'date', 'boolean', 'checkbox'],
-                validMethod: value => true
-            }
-        ]
 
-        this.setState({
-            formItems:   this.props.navigation.getParam('formItems', [])
-        })
-    }
 
     render() {
         return (
