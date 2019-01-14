@@ -13,7 +13,8 @@ import {
     PickerIOS,
     ListView,
     DatePickerIOS,
-    AsyncStorage
+    AsyncStorage,
+    AlertIOS
 } from 'react-native';
 import PropTypes from 'prop-types'
 import { Container, Header, Content, List, ListItem, Text, Icon, Left, Body, Right, Switch, Button, Title, Form, Item, Input, Label, Picker } from 'native-base';
@@ -27,20 +28,38 @@ export default class AttributeEditor extends Component {
             title: navigation.getParam('headerTitle', 'Invalid Access'),
             headerRight:
                 <Button block iconLeft transparent onPress={() => navigation.state.params.navigatePress()}>
-                    <Icon name='add' style={{ fontSize: 30 }} />
+                    <Text style={{}}>Save</Text>
                 </Button>
         }
     };
 
     componentWillMount() {
         this.setState({
-            formItems: this.props.navigation.getParam('formItems', [])
+            formItems: this.props.navigation.getParam('formItems', []),
+            invalidRecord: {}
         })
+    }
+
+    valid(validMethod = () => null, item) {
+        let errMsg = validMethod(item.value)
+        if (!errMsg) {
+            this.state.invalidRecord[item.title] = null
+            return false
+        }
+        this.state.invalidRecord[item.title] = errMsg
+        return true
     }
 
     componentDidMount() {
         this.props.navigation.setParams({
             navigatePress: () => {
+                let errList = []
+                Object.keys(this.state.invalidRecord).forEach(_ir => {
+                    if (!this.state.invalidRecord[_ir]) return
+                    errList.push(`'${_ir}': ${this.state.invalidRecord[_ir]}`)
+                })
+                if (errList.length !== 0)
+                    return AlertIOS.alert('数据格式错误', errList.map((e, h) => `${h + 1}.${e}`).join('\n'))
                 this.props.navigation.state.params.callback(this.state.formItems)
                 this.props.navigation.goBack()
             }
@@ -49,7 +68,7 @@ export default class AttributeEditor extends Component {
 
     string(item) {
         return (
-            <Item key={item.title} error={!item.validMethod(item.value)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                 <Label>{item.title}</Label>
                 <Input
                     style={{ textAlign: 'right' }}
@@ -66,19 +85,14 @@ export default class AttributeEditor extends Component {
 
     int(item) {
         return (
-            <Item key={item.title} error={!item.validMethod(item.value)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                 <Label>{item.title}</Label>
                 <Input
                     style={{ textAlign: 'right' }}
                     value={item.value != undefined && item.value.toString()}
                     keyboardType='numeric'
                     onChangeText={value => {
-                        item.value = value.indexOf('.') != value.lastIndexOf('.')? item.value: value
-                        this.setState(this.state)
-                        this.asyncStorage()
-                    }}
-                    onBlur={value => {
-                        item.value = parseFloat(item.value)
+                        item.value = !value || value.endsWith('.') || value.endsWith('0') ? value : parseFloat(value)
                         this.setState(this.state)
                         this.asyncStorage()
                     }}
@@ -88,8 +102,9 @@ export default class AttributeEditor extends Component {
     }
 
     date(item) {
+        !(item.value instanceof Date) && (item.value = new Date(item.value))
         return (
-            <Item key={item.title} error={!item.validMethod(item.value)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                 <Label>{item.title}</Label>
                 <Text
                     style={{ textAlign: 'right', position: 'absolute', right: 20 }}
@@ -110,11 +125,11 @@ export default class AttributeEditor extends Component {
                             this.setState(this.state)
                             this.asyncStorage()
                         }}>
-                        <View onTouchStart={e => e.stopPropagation()}                        >
+                        <View onTouchStart={e => e.stopPropagation()}>
                             <DatePickerIOS
                                 date={item.value}
                                 onDateChange={value => {
-                                    item.value = value
+                                    item.value = moment(value).toDate().getTime()
                                     this.setState(this.state)
                                     this.asyncStorage()
                                 }}
@@ -129,7 +144,7 @@ export default class AttributeEditor extends Component {
 
     boolean(item) {
         return (
-            <Item key={item.title} error={!item.validMethod(item.value)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                 <Label>{item.title}</Label>
                 <Switch value={item.value} onValueChange={value => {
                     item.value = value
@@ -142,7 +157,7 @@ export default class AttributeEditor extends Component {
 
     checkbox(item) {
         return (
-            <Item key={item.title} error={!item.validMethod(item.value)} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
+            <Item key={item.title} error={this.valid(item.validMethod, item)} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
                 <Label>{item.title}</Label>
                 <Picker
                     headerStyle={{ paddingTop: 42, height: 88 }}

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { ListView, StyleSheet, Text, TouchableOpacity, TouchableHighlight, View, Image, AsyncStorage } from 'react-native';
+import { ListView, StyleSheet, Text, TouchableOpacity, TouchableHighlight, View, Image, AsyncStorage, AlertIOS } from 'react-native';
 import PropTypes from 'prop-types'
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
 import { Container, Header, Content, List, ListItem, Icon, Left, Body, Right, Switch, Button, Title, Form, Item, Input, Label, Picker, Card, CardItem, Thumbnail } from 'native-base';
@@ -17,7 +17,9 @@ export default class ListPresenter extends Component {
 
   componentWillMount() {
     this.setState({
-      list: this.props.navigation.getParam('list', [])
+      list: this.props.navigation.getParam('list', []),
+      disableDelete: this.props.navigation.getParam('disableDelete', false),
+      disableEdit: this.props.navigation.getParam('disableEdit', false),
     })
   }
 
@@ -26,15 +28,20 @@ export default class ListPresenter extends Component {
     this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
   }
 
-  deleteRow(secId, rowId, rowMap) {
+  onRemoveItem(secId, rowId, rowMap, targetItem) {
+    let targetIndex = this.state.list.indexOf(targetItem)
+    this.state.list.splice(targetIndex, 1)
+    let errMsg = this.props.navigation.getParam('onRemoveItem', () => AlertIOS.alert('invalid data delete'))(this.state.list, targetItem)
+    if (errMsg) {
+      this.state.list.splice(targetIndex, 0, targetItem)
+      return AlertIOS.alert('删除失败', errMsg)
+    }
     rowMap[`${secId}${rowId}`].closeRow();
-    const newData = [...this.state.listViewData];
-    newData.splice(rowId, 1);
-    this.setState({ listViewData: newData });
+    this.setState(this.state)
   }
 
-  saveList() {
-    AsyncStorage.mergeItem('listPresenter', JSON.stringify({ list: this.state.list }), error => error && AlertIOS.alert('Our Apologies', `Something wrong when set storage, all operations during failure won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`))
+  saveList(newItem) {
+    this.props.navigation.getParam('onChangeData', () => AlertIOS.alert('invalid data change'))(this.state.list, newItem)
   }
 
   goEditor(row) {
@@ -42,17 +49,19 @@ export default class ListPresenter extends Component {
       routeName: 'AttributeEditor',
       params: {
         callback: formItems => {
-          row = formItems
+          formItems.forEach(_fi => row.find(_r => _r.title === _fi.title).value === _fi.value)
           this.setState(this.state)
-          this.saveList()
+          this.saveList(row)
         },
         headerTitle: row[0].value,
-        formItems: row
+        formItems: row.filter(_r => !_r.disEditable)
       }
     })
   }
 
   render() {
+    if (this.state.list.length === 0)
+      return <Text style={{ textAlign: 'center', marginTop: 30, fontSize: 15 }}>暂无数据</Text>
     return (
       <SwipeListView style={styles.container}
         dataSource={this.ds.cloneWithRows(this.state.list)}
@@ -70,7 +79,10 @@ export default class ListPresenter extends Component {
               <Text style={{ flex: 3, fontSize: 30, textAlign: 'right', marginRight: 20 }}>{_row[0].value}</Text>
               <View style={{ flex: 7 }}>
                 {
-                  _row.slice(1, _row.length).map(_ao => <Text key={_ao.value} style={styles.item}><Text style={styles.label}>{_ao.title}：</Text>{_ao.type === 'date' ? moment(_ao.value).format('YYYY-MM-DD H:mm') : _ao.value}</Text>)
+                  _row.slice(1, _row.length).map(_ao =>
+                    <Text key={_ao.title} style={styles.item}>
+                      <Text style={styles.label}>{_ao.title}：</Text>{_ao.type === 'date' ? moment(_ao.value).format('YYYY-MM-DD H:mm') : _ao.value}
+                    </Text>)
                 }
               </View>
             </View>
@@ -85,21 +97,28 @@ export default class ListPresenter extends Component {
                 justifyContent: 'center',
                 position: 'absolute',
                 top: 0,
-                width: 75,
+                width: this.state.disableDelete ? 0 : 75,
                 backgroundColor: 'red',
               }}
-              onPress={_ => this.deleteRow(secId, rowId, rowMap)}>
+              onPress={_ => this.onRemoveItem(secId, rowId, rowMap, row)}>
               <Text style={{ color: 'white' }}>删除</Text>
             </TouchableOpacity>
             <TouchableOpacity
-              style={[styles.backRightBtn, styles.backRightBtnRight]}
+              style={[{
+                alignItems: 'center',
+                bottom: 0,
+                justifyContent: 'center',
+                position: 'absolute',
+                top: 0,
+                width: this.state.disableEdit ? 0 : 75,
+              }, styles.backRightBtnRight]}
               onPress={() => this.goEditor(row)}>
               <Text style={styles.backTextWhite}>编辑</Text>
             </TouchableOpacity>
           </View>
         )}
-        leftOpenValue={75}
-        rightOpenValue={-75}
+        leftOpenValue={this.state.disableDelete ? 0 : 75}
+        rightOpenValue={this.state.disableEdit ? 0 : -75}
       />
     );
   }
@@ -143,16 +162,8 @@ const styles = StyleSheet.create({
     top: 0,
     width: 75,
   },
-  backRightBtnLeft: {
-    backgroundColor: 'blue',
-    right: 75,
-  },
   backRightBtnRight: {
     backgroundColor: 'pink',
     right: 0,
-  },
-  controls: {
-    alignItems: 'center',
-    marginBottom: 30,
   },
 });
