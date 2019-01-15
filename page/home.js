@@ -79,7 +79,7 @@ export default class BillBiuBiu extends Component {
         this.props.navigation.navigate({
             routeName: 'ListPresenter',
             params: {
-                headerTitle: 'Wallets',
+                headerTitle: '钱包',
                 list: this.state.wallets.map(_w => [
                     ['名称', 'name', {
                         type: 'string',
@@ -107,8 +107,9 @@ export default class BillBiuBiu extends Component {
                     editable: true
                 })))),
                 onChangeData: wallets => {
+                    this.state.wallets = wallets.map(_l => _l.reduce((a, b) => Object.assign(a, { [b.name]: b.value }), {}))
                     this.setState({
-                        wallets: wallets.map(_l => _l.reduce((a, b) => Object.assign(a, { [b.name]: b.value }), {}))
+                        wallets: this.state.wallets
                     })
                     this.saveItem()
                 },
@@ -118,6 +119,7 @@ export default class BillBiuBiu extends Component {
                     this.setState({
                         wallets: this.state.wallets
                     })
+                    this.saveItem()
                 }).bind(this)
             }
         })
@@ -132,7 +134,7 @@ export default class BillBiuBiu extends Component {
         this.props.navigation.navigate({
             routeName: 'ListPresenter',
             params: {
-                headerTitle: 'Collections',
+                headerTitle: '集合',
                 list: this.state.collections.map(_c => {
                     let collectionWalletsNames = this.state.wallets.filter(_w => _w.collection === _c).map(_w => _w.name)
                     return [
@@ -149,7 +151,7 @@ export default class BillBiuBiu extends Component {
                             disEditable: true
                         },
                         {
-                            title: 'costs total',
+                            title: '消费总额',
                             value: this.state.bills.reduce((a, b) => collectionWalletsNames.includes(b.walletName) ? a + b.amount : a, 0),
                             disEditable: true
                         },
@@ -176,7 +178,7 @@ export default class BillBiuBiu extends Component {
         this.props.navigation.navigate({
             routeName: 'ListPresenter',
             params: {
-                headerTitle: 'Colors',
+                headerTitle: '彩圈',
                 list: this.state.colors.map(_c => {
                     return [
                         {
@@ -215,7 +217,7 @@ export default class BillBiuBiu extends Component {
         this.props.navigation.navigate({
             routeName: 'ListPresenter',
             params: {
-                headerTitle: 'Bills',
+                headerTitle: '账单',
                 list: this.state.bills.map(_w => [
                     ['消费时间', 'date', {
                         type: 'date',
@@ -342,7 +344,7 @@ export default class BillBiuBiu extends Component {
                 callback: formItems => {
                     this.afterNewWallet(formItems)
                 },
-                headerTitle: 'Add a Wallet',
+                headerTitle: '新建钱包',
                 formItems: [
                     {
                         title: 'Wallet Name',
@@ -393,7 +395,7 @@ export default class BillBiuBiu extends Component {
                 callback: formItems => {
                     this.afterNewCollection(formItems)
                 },
-                headerTitle: 'New Collection',
+                headerTitle: '新建集合',
                 formItems: [
                     {
                         title: 'Collection Name',
@@ -428,7 +430,6 @@ export default class BillBiuBiu extends Component {
                         date={this.state.datePicker}
                         onDateChange={datePicker => {
                             this.setState({ datePicker })
-                            this.saveItem()
                         }}
                     />
                     <View style={styles.button}

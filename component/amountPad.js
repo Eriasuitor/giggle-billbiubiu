@@ -102,7 +102,7 @@ export default class AmountPad extends Component {
             this.state.showDetail ? (<G>
               <Text textAnchor='middle' y='-35' fontSize='10'>{this.props.name}</Text>
               <Text textAnchor='middle' y='-25' fontSize='24'>{this.state.integer}.{this.state.decimal}</Text>
-              <Text textAnchor='middle' fontSize='10'>Balance</Text>
+              <Text textAnchor='middle' fontSize='10'>余额</Text>
               <Text textAnchor='middle' y='10'>{this.props.balance}</Text>
               <Circle r={this.state.radius - 10} opacity='0' onPress={() => { this.props.onClick(this.state.integer, this.state.decimal, this.state.color) }} />
             </G>) : (<G>
