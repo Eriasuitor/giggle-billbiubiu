@@ -53,6 +53,9 @@
 		741A78606B1244D799909FB5 /* Ionicons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6AD633276C474507918EE916 /* Ionicons.ttf */; };
 		7D447AE9B67840C2893C3621 /* Entypo.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB7034DBEC11464E9EC1C54C /* Entypo.ttf */; };
 		7DA5F2AA05F1480581D614D7 /* Zocial.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 03CC625D99B143AE8A31ED78 /* Zocial.ttf */; };
+		825557EE21EE0BDD008B40A2 /* index.ios.jsbundle.meta in Resources */ = {isa = PBXBuildFile; fileRef = 825557EB21EE0BDC008B40A2 /* index.ios.jsbundle.meta */; };
+		825557EF21EE0BDD008B40A2 /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 825557EC21EE0BDC008B40A2 /* assets */; };
+		825557F021EE0BDD008B40A2 /* index.ios.jsbundle in Resources */ = {isa = PBXBuildFile; fileRef = 825557ED21EE0BDD008B40A2 /* index.ios.jsbundle */; };
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		852ECDA7EF1D4E93AB5983BE /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 4A85B43C0EA641F78668CC6E /* SimpleLineIcons.ttf */; };
 		8A8E3BF294444206AB0A3866 /* SanFranciscoThin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6F78C972921A48D09A97B5D2 /* SanFranciscoThin.ttf */; };
@@ -319,6 +322,9 @@
 		7C0C7A20AC764497BEAA8048 /* Arial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Arial.ttf; path = "../node_modules/native-base/Fonts/Arial.ttf"; sourceTree = "<group>"; };
 		7E321D7E658F47A78F7D5153 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/native-base/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		81EBEFA08EFD441DB6918DED /* SF-UI-Text-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SF-UI-Text-Regular.otf"; path = "../node_modules/native-base/Fonts/SF-UI-Text-Regular.otf"; sourceTree = "<group>"; };
+		825557EB21EE0BDC008B40A2 /* index.ios.jsbundle.meta */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = index.ios.jsbundle.meta; path = bundle/index.ios.jsbundle.meta; sourceTree = "<group>"; };
+		825557EC21EE0BDC008B40A2 /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = bundle/assets; sourceTree = "<group>"; };
+		825557ED21EE0BDD008B40A2 /* index.ios.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = index.ios.jsbundle; path = bundle/index.ios.jsbundle; sourceTree = "<group>"; };
 		832341B01AAA6A8300B99B32 /* RCTText.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTText.xcodeproj; path = "../node_modules/react-native/Libraries/Text/RCTText.xcodeproj"; sourceTree = "<group>"; };
 		83365F8F0751476B84DD0F04 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/native-base/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		8ED0D747521244AC9BB20772 /* Roboto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Roboto.ttf; path = "../node_modules/native-base/Fonts/Roboto.ttf"; sourceTree = "<group>"; };
@@ -470,6 +476,9 @@
 		13B07FAE1A68108700A75B9A /* BillBiuBiu */ = {
 			isa = PBXGroup;
 			children = (
+				825557EC21EE0BDC008B40A2 /* assets */,
+				825557ED21EE0BDD008B40A2 /* index.ios.jsbundle */,
+				825557EB21EE0BDC008B40A2 /* index.ios.jsbundle.meta */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.m */,
@@ -711,7 +720,11 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 4TKBXFWNJ8;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
+					};
+					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 4TKBXFWNJ8;
 					};
 					2D02E47A1E0B4A5D006451C7 = {
 						CreatedOnToolsVersion = 8.2.1;
@@ -992,6 +1005,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				825557EF21EE0BDD008B40A2 /* assets in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				CCDAB86EE9974869A77BEB58 /* Andale Mono.ttf in Resources */,
@@ -999,6 +1013,7 @@
 				56552AF9CB6B4DACAE063D9E /* Arial.ttf in Resources */,
 				E07AF468459D4E4E9126088B /* Comic Sans MS.ttf in Resources */,
 				A3FE31CB46904F5BB78362FC /* Courier New.ttf in Resources */,
+				825557F021EE0BDD008B40A2 /* index.ios.jsbundle in Resources */,
 				7D447AE9B67840C2893C3621 /* Entypo.ttf in Resources */,
 				1DC13AB7C2A440988ED7D4B0 /* EvilIcons.ttf in Resources */,
 				20767831679D4E859753D5E0 /* FontAwesome.ttf in Resources */,
@@ -1016,6 +1031,7 @@
 				3358A54E995047A591025C61 /* Rubik-Bold.ttf in Resources */,
 				B394EF4726B84E109A952BBA /* Rubik-BoldItalic.ttf in Resources */,
 				4FA3600234FD470C81AD8341 /* Rubik-Italic.ttf in Resources */,
+				825557EE21EE0BDD008B40A2 /* index.ios.jsbundle.meta in Resources */,
 				C080BFCFE5A94983B2A609C5 /* Rubik-Light.ttf in Resources */,
 				23959EA0AE6C4533B0CC33F2 /* Rubik-LightItalic.ttf in Resources */,
 				97711EA2CF924313990A4398 /* Rubik-Medium.ttf in Resources */,
@@ -1147,6 +1163,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = 4TKBXFWNJ8;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -1176,6 +1193,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 4TKBXFWNJ8;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
@@ -1202,11 +1220,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = 4TKBXFWNJ8;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 				);
 				INFOPLIST_FILE = BillBiuBiu/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
@@ -1223,11 +1243,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4TKBXFWNJ8;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SRCROOT)/../node_modules/react-native-svg/ios/**",
 				);
 				INFOPLIST_FILE = BillBiuBiu/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",

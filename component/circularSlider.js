@@ -42,11 +42,13 @@ import Svg, {
 export default class CircularSlider extends Component {
 
   static propTypes = {
-    onUpdate: PropTypes.func.isRequired,
-    strokeWidthHalf: PropTypes.number,
-    sideLengthHalf: PropTypes.number,
-    radius: PropTypes.number,
-    color: PropTypes.string
+    strokeWidth: PropTypes.number,
+    sideLength: PropTypes.number,
+    touchRadius: PropTypes.number,
+    scaleInteger: PropTypes.number,
+    scaleDecimal: PropTypes.number,
+    color: PropTypes.string,
+    onUpdate: PropTypes.func
   }
 
   static defaultProps = {
@@ -55,7 +57,8 @@ export default class CircularSlider extends Component {
     touchRadius: 7,
     scaleInteger: 100,
     scaleDecimal: 100,
-    color: 'pink'
+    color: 'pink',
+    onUpdate: () => { }
   }
 
   componentWillMount() {

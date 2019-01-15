@@ -13,6 +13,7 @@ import {
     TextInput,
     PickerIOS,
     ListView,
+    FlatList,
     AsyncStorage,
     AlertIOS,
     DatePickerIOS
@@ -20,7 +21,6 @@ import {
 import lodash from 'lodash'
 import AmountPad from '../component/amountPad'
 import Notification from '../component/notification'
-import { createDrawerNavigator } from 'react-navigation'
 import moment from 'moment'
 
 export default class BillBiuBiu extends Component {
@@ -37,33 +37,39 @@ export default class BillBiuBiu extends Component {
 
     constructor(props) {
         super(props);
+
+    }
+
+    componentWillMount() {
+        // AsyncStorage.clear()
         this.state = {
             datePicker: new Date(),
             recordCounter: 0,
             collections: [],
             bills: [],
             colors: [{
-                value: 'pink',
-                startDate: new Date().getTime()
+                value: '粉',
+                startDate: new Date().getTime(),
+                rgba: 'pink'
             }, {
-                value: 'grey',
-                startDate: new Date().getTime()
+                value: '灰',
+                startDate: new Date().getTime(),
+                rgba: 'grey'
             }, {
-                value: 'purple',
-                startDate: new Date().getTime()
+                value: '紫',
+                startDate: new Date().getTime(),
+                rgba: 'purple'
             }, {
-                value: 'red',
-                startDate: new Date().getTime()
+                value: '红',
+                startDate: new Date().getTime(),
+                rgba: 'red'
             }, {
-                value: 'green',
-                startDate: new Date().getTime()
+                value: '绿',
+                startDate: new Date().getTime(),
+                rgba: 'green'
             }],
             wallets: []
         };
-    }
-
-    componentWillMount() {
-        // AsyncStorage.clear()
         AsyncStorage.getItem('homeState', (error, result) => {
             error && AlertIOS.alert('Our Apologies', `Something wrong when get storage, all operations during malfunction won't be save. We suggest you suspending the use of this software until repaired. error message: ${JSON.stringify(error)}`)
             if (result) {
@@ -202,7 +208,7 @@ export default class BillBiuBiu extends Component {
                 onChangeData: ((colors, newColor) => {
                     let color = this.state.colors.find(_c => _c.value === newColor.find(_nc => _nc.title === '名称').value)
                     color.startDate = newColor.find(_nc => _nc.title === '开始时间').value
-                    newColor.find(_nc => _nc.title === '总计数额').value = 
+                    newColor.find(_nc => _nc.title === '总计数额').value =
                         this.state.bills.reduce((a, b) => b.color === color.value && b.date >= color.startDate ? a + b.amount : a, 0)
                     this.setState(this.state)
                     this.saveItem()
@@ -350,7 +356,7 @@ export default class BillBiuBiu extends Component {
                     {
                         title: 'Wallet Name',
                         type: 'string',
-                        value: 'new wallet',
+                        value: '新钱包',
                         validMethod: this.walletNameValidMethod
                     },
                     {
@@ -413,7 +419,9 @@ export default class BillBiuBiu extends Component {
         return (
             <View style={{ flex: 1 }}>
                 <Notification ref='notificationPad' />
-                <View style={{ marginTop: 40, flexDirection: 'row', flexWrap: 'wrap' }}>
+                <View
+                    // scrollEnabled={!!this.state.scrollEnabled}
+                    style={{ marginTop: 40, marginBottom: 1000, flexDirection: 'row', flexWrap: 'wrap' }} >
                     {
                         this.state.wallets.map(_w => (
                             <AmountPad
@@ -421,7 +429,8 @@ export default class BillBiuBiu extends Component {
                                 balance={_w.balance}
                                 name={_w.name}
                                 onClick={(integer, decimal, color) => this.newBill.call(this, _w, integer + decimal, color)}
-                                colors={this.state.colors.map(_c => _c.value)}
+                                colors={this.state.colors}
+                                touchRadius={9}
                             />
                         ))
                     }
@@ -462,6 +471,20 @@ export default class BillBiuBiu extends Component {
                     >
                         <TextOrigin style={styles.option}>彩圈</TextOrigin>
                     </View>
+                    <View style={styles.button}
+                        onTouchStart={() => {
+                            AlertIOS.alert('注意', '确认要重置此应用吗？', [{
+                                text: '确认', onPress: () => {
+                                    AsyncStorage.clear()
+                                    this.componentWillMount()
+                                }
+                            }, {
+                                text: '取消', onPress: () => { }
+                            }])
+                        }}
+                    >
+                        <TextOrigin style={styles.option}>重置应用</TextOrigin>
+                    </View>
                 </View>
             </View>
         );
@@ -476,7 +499,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#F5FCFF',
     },
     option: {
-        fontSize: 13,
+        fontSize: 14,
     },
     datePicker: {
         width: '100%',
@@ -488,7 +511,8 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         flexWrap: 'wrap',
-        //  justifyContent: 'space-between',
+        backgroundColor: 'white',
+        // justifyContent: 'center',
         paddingBottom: 30
     },
     button: {
