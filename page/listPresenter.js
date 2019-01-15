@@ -113,7 +113,7 @@ export default class ListPresenter extends Component {
                 width: this.state.disableEdit ? 0 : 75,
               }, styles.backRightBtnRight]}
               onPress={() => this.goEditor(row)}>
-              <Text style={styles.backTextWhite}>{typeof(row.find(_ => _.type === 'date').value)}</Text>
+              <Text style={styles.backTextWhite}>编辑</Text>
             </TouchableOpacity>
           </View>
         )}
