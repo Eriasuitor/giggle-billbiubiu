@@ -102,7 +102,6 @@ export default class AttributeEditor extends Component {
     }
 
     date(item) {
-        !(item.value instanceof Date) && (item.value = new Date(item.value))
         return (
             <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
                 <Label>{item.title}</Label>
@@ -113,7 +112,7 @@ export default class AttributeEditor extends Component {
                         this.setState(this.state)
                         this.asyncStorage()
                     }}
-                >{item.value && moment(item.value).format('YYYY-MM-DD H:mm')}</Text>
+                >{moment(item.value).format('YYYY-MM-DD H:mm')}</Text>
                 <Modal
                     animationType="fade"
                     transparent={true}
@@ -127,7 +126,7 @@ export default class AttributeEditor extends Component {
                         }}>
                         <View onTouchStart={e => e.stopPropagation()}>
                             <DatePickerIOS
-                                date={item.value}
+                                date={new Date(item.value)}
                                 onDateChange={value => {
                                     item.value = moment(value).toDate().getTime()
                                     this.setState(this.state)

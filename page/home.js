@@ -173,7 +173,6 @@ export default class BillBiuBiu extends Component {
     }
 
     showColors() {
-        alert(JSON.stringify(this.state.bills.map(_ => _.date)) + '\n\n\n' + JSON.stringify(this.state.colors.map(_ => _.startDate)))
         this.props.navigation.navigate({
             routeName: 'ListPresenter',
             params: {
@@ -218,6 +217,9 @@ export default class BillBiuBiu extends Component {
             params: {
                 headerTitle: 'Bills',
                 list: this.state.bills.map(_w => [
+                    ['消费时间', 'date', {
+                        type: 'date',
+                    }],
                     ['钱包', 'walletName', {
                         type: 'checkbox',
                         options: this.state.wallets.map(_w => _w.name),
@@ -230,9 +232,6 @@ export default class BillBiuBiu extends Component {
                     ['染色', 'color', {
                         type: 'checkbox',
                         options: this.state.colors.map(_c => _c.value),
-                    }],
-                    ['消费时间', 'date', {
-                        type: 'date',
                     }],
                     ['计数器', 'recordCounter', {
                         type: 'int',

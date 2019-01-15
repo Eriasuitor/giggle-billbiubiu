@@ -76,7 +76,7 @@ export default class ListPresenter extends Component {
               display: 'flex',
               flexDirection: 'row'
             }}>
-              <Text style={{ flex: 3, fontSize: 30, textAlign: 'right', marginRight: 20 }}>{_row[0].value}</Text>
+              <Text style={{ flex: 3, fontSize: 25, textAlign: 'right', marginRight: 20 }}>{_row[0].type === 'date' ? moment(_row[0].value).format('YYYY-MM-DD H:mm') : _row[0].value}</Text>
               <View style={{ flex: 7 }}>
                 {
                   _row.slice(1, _row.length).map(_ao =>
@@ -113,7 +113,7 @@ export default class ListPresenter extends Component {
                 width: this.state.disableEdit ? 0 : 75,
               }, styles.backRightBtnRight]}
               onPress={() => this.goEditor(row)}>
-              <Text style={styles.backTextWhite}>编辑</Text>
+              <Text style={styles.backTextWhite}>{typeof(row.find(_ => _.type === 'date').value)}</Text>
             </TouchableOpacity>
           </View>
         )}
