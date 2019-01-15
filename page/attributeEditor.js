@@ -60,6 +60,7 @@ export default class AttributeEditor extends Component {
                 })
                 if (errList.length !== 0)
                     return AlertIOS.alert('数据格式错误', errList.map((e, h) => `${h + 1}.${e}`).join('\n'))
+                this.state.formItems.forEach(_f => _f.type === 'int' && (_f.value = parseFloat(_f.value)))
                 this.props.navigation.state.params.callback(this.state.formItems)
                 this.props.navigation.goBack()
             }

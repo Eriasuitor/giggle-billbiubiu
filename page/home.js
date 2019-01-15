@@ -289,6 +289,7 @@ export default class BillBiuBiu extends Component {
                 description: `wallet ${wallet.name} recall ¥ ${bill.amount}`,
             })
         }
+        this.state.bills.sort((a, b) => b.date - a.date)
         this.setState(this.state)
         this.saveItem()
     }
