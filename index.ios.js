@@ -9,6 +9,7 @@ import { StackNavigator } from 'react-navigation'
 import NewWallet from './page/newWallet'
 import Wallets from './page/wallets'
 import AttributeEditor from  './page/attributeEditor'
+import AttributeEditor1 from  './page/attributeEditor.1'
 import ListPresenter from  './page/listPresenter'
 
 AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
@@ -23,9 +24,10 @@ AppRegistry.registerComponent('BillBiuBiu', () => StackNavigator({
     },
     Wallets,
     AttributeEditor,
-    ListPresenter
+    ListPresenter,
+    AttributeEditor1
 }, {
-        initialRouteName: 'Home',
+        initialRouteName: 'AttributeEditor1',
         cardStyle: {
             backgroundColor: 'white'
         }
