@@ -36,6 +36,7 @@ export default class AttributeEditor extends Component {
     componentWillMount() {
         this.setState({
             formItems: this.props.navigation.getParam('formItems', []),
+            returnAsObject: this.props.navigation.getParam('returnAsArray', true),
             invalidRecord: {}
         })
     }
@@ -61,7 +62,10 @@ export default class AttributeEditor extends Component {
                 if (errList.length !== 0)
                     return AlertIOS.alert('数据格式错误', errList.map((e, h) => `${h + 1}.${e}`).join('\n'))
                 this.state.formItems.forEach(_f => _f.type === 'int' && (_f.value = parseFloat(_f.value)))
-                this.props.navigation.state.params.callback(this.state.formItems)
+                this.props.navigation.state.params.callback(
+                    
+                    this.state.returnAsObject? this.state.formItems.reduce((a, b) =>  Object.assign(a, { [b.key]: b.value }), {} ): this.state.formItems
+                )
                 this.props.navigation.goBack()
             }
         })
@@ -69,8 +73,8 @@ export default class AttributeEditor extends Component {
 
     string(item) {
         return (
-            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
-                <Label>{item.title}</Label>
+            <Item key={item.name} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                <Label>{item.name}</Label>
                 <Input
                     style={{ textAlign: 'right' }}
                     value={item.value}
@@ -86,8 +90,8 @@ export default class AttributeEditor extends Component {
 
     int(item) {
         return (
-            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
-                <Label>{item.title}</Label>
+            <Item key={item.name} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                <Label>item.name</Label>
                 <Input
                     style={{ textAlign: 'right' }}
                     value={item.value != undefined && item.value.toString()}
@@ -104,8 +108,8 @@ export default class AttributeEditor extends Component {
 
     date(item) {
         return (
-            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
-                <Label>{item.title}</Label>
+            <Item key={item.name} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                <Label>{item.name}</Label>
                 <Text
                     style={{ textAlign: 'right', position: 'absolute', right: 20 }}
                     onPress={() => {
@@ -144,8 +148,8 @@ export default class AttributeEditor extends Component {
 
     boolean(item) {
         return (
-            <Item key={item.title} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
-                <Label>{item.title}</Label>
+            <Item key={item.name} error={this.valid(item.validMethod, item)} fixedLabel style={{ height: 45, marginRight: 15, paddingRight: 15 }}>
+                <Label>{item.name}</Label>
                 <Switch value={item.value} onValueChange={value => {
                     item.value = value
                     this.setState(this.state)
@@ -157,8 +161,8 @@ export default class AttributeEditor extends Component {
 
     checkbox(item) {
         return (
-            <Item key={item.title} error={this.valid(item.validMethod, item)} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
-                <Label>{item.title}</Label>
+            <Item key={item.name} error={this.valid(item.validMethod, item)} itemPicker fixedLabel style={{ height: 45, marginRight: 15 }}>
+                <Label>{item.name}</Label>
                 <Picker
                     headerStyle={{ paddingTop: 42, height: 88 }}
                     iosHeader={item.title}
@@ -174,7 +178,7 @@ export default class AttributeEditor extends Component {
                     }}
                 >
                     {
-                        item.options.map(_o => <Picker.Item key={_o} label={_o} value={_o} />)
+                        item.options.map(_o => <Picker.Item key={_o.name} label={_o.key || _o.name} value={_o.value} />)
                     }
                 </Picker>
             </Item>
